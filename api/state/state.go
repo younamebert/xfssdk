@@ -12,14 +12,7 @@ type StateLink interface {
 }
 
 type ApiState struct {
-	// GVA_XFSCLICENT *client.Client
 }
-
-// func NewApiState(cli *client.Client) *ApiState {
-// 	return &ApiState{
-// 		GVA_XFSCLICENT: cli,
-// 	}
-// }
 
 func (state *ApiState) GetBalance(address string) (*string, error) {
 	req := &GetBalanceArgs{

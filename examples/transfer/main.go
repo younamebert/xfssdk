@@ -38,7 +38,7 @@ func main() {
 		Nonce:    noncestr,
 		Value:    "1",
 	}
-
+	// handle.Exactly.InspectTx.NewRawTransaction(fromPriKey, tx)
 	//交易签名
 	if err := tx.SignWithPrivateKey(fromPriKey); err != nil {
 		fmt.Printf("by address get txpool nonce err:%v\n", err)
@@ -47,6 +47,7 @@ func main() {
 
 	// 把交易对象结构体base64加密
 	txraw, err := tx.RawTx()
+	fmt.Println(txraw)
 	if err != nil {
 		fmt.Printf("tx to base64 err:%v\n", err)
 		os.Exit(1)
