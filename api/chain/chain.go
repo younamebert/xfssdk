@@ -14,7 +14,7 @@ type ChainLink interface {
 	GetBlockByHash(hash string) (*apis.BlockResp, error)
 	GetTxsByBlockNum(number string) (*apis.TransactionsResp, error)
 	GetTxsByBlockHash(hash string) (*apis.TransactionsResp, error)
-	GetReceiptByHash(hash string) (*apis.ReceiptResp, error)
+	GetReceiptByHash(txhash string) (*apis.ReceiptResp, error)
 	GetTransaction(txhash string) (*apis.TransactionResp, error)
 	GetBlockTxCountByHash(hash string) (*int, error)
 	GetBlockTxCountByNum(number string) (*int, error)
@@ -137,10 +137,10 @@ func (chain *ApiChain) GetTxsByBlockHash(hash string) (*apis.TransactionsResp, e
 	return result, nil
 }
 
-func (chain *ApiChain) GetReceiptByHash(hash string) (*apis.ReceiptResp, error) {
+func (chain *ApiChain) GetReceiptByHash(txhash string) (*apis.ReceiptResp, error) {
 
 	req := &GetReceiptByHashArgs{
-		Hash: hash,
+		Hash: txhash,
 	}
 	result := new(apis.ReceiptResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetReceiptByHash", &req, &result); err != nil {
