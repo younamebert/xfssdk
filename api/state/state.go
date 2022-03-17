@@ -12,12 +12,12 @@ type StateLink interface {
 }
 
 type ApiState struct {
-	// XFSCLICENT *client.Client
+	// GVA_XFSCLICENT *client.Client
 }
 
 // func NewApiState(cli *client.Client) *ApiState {
 // 	return &ApiState{
-// 		XFSCLICENT: cli,
+// 		GVA_XFSCLICENT: cli,
 // 	}
 // }
 
@@ -26,7 +26,7 @@ func (state *ApiState) GetBalance(address string) (*string, error) {
 		Address: address,
 	}
 	var result *string
-	if err := apis.XFSCLICENT.CallMethod(1, "State.GetBalance", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "State.GetBalance", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -38,7 +38,7 @@ func (state *ApiState) GetBalanceByHash(address string, roothash string) (*strin
 		RootHash: roothash,
 	}
 	var result *string
-	if err := apis.XFSCLICENT.CallMethod(1, "State.GetBalance", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "State.GetBalance", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -49,7 +49,7 @@ func (state *ApiState) GetAccount(address string) (*apis.StateObjResp, error) {
 		Address: address,
 	}
 	result := new(apis.StateObjResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "State.GetAccount", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "State.GetAccount", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -61,7 +61,7 @@ func (state *ApiState) GetAccountByHash(address string, roothash string) (*apis.
 		RootHash: roothash,
 	}
 	result := new(apis.StateObjResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "State.GetAccount", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "State.GetAccount", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil

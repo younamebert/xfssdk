@@ -1,4 +1,4 @@
-package xfssdk
+package config
 
 import (
 	"strings"

@@ -7,12 +7,12 @@ type NetLink interface {
 }
 
 type ApiNet struct {
-	// XFSCLICENT *client.Client
+	// GVA_XFSCLICENT *client.Client
 }
 
 // func (net *ApiNet) GetPeers() ([]string, error) {
 // 	result := make([]string, 0)
-// 	if err := apis.XFSCLICENT.CallMethod(1, "Net.GetPeers", nil, &result); err != nil {
+// 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Net.GetPeers", nil, &result); err != nil {
 // 		return nil, err
 // 	}
 // 	return result, nil
@@ -20,13 +20,13 @@ type ApiNet struct {
 
 // func NewApiNet(cli *client.Client) *ApiNet {
 // 	return &ApiNet{
-// 		XFSCLICENT: cli,
+// 		GVA_XFSCLICENT: cli,
 // 	}
 // }
 
 func (net *ApiNet) GetNodeId() (*string, error) {
 	var result *string
-	if err := apis.XFSCLICENT.CallMethod(1, "Net.GetPeers", nil, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Net.GetPeers", nil, &result); err != nil {
 		return nil, err
 	}
 	return result, nil

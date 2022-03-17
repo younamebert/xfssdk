@@ -14,19 +14,19 @@ type TxPoolLink interface {
 }
 
 type ApiTxPool struct {
-	// XFSCLICENT *client.Client
+	// GVA_XFSCLICENT *client.Client
 }
 
 // func NewApiTxPool(cli *client.Client) *ApiTxPool {
 // 	return &ApiTxPool{
-// 		XFSCLICENT: cli,
+// 		GVA_XFSCLICENT: cli,
 // 	}
 // }
 
 func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
 
 	result := new(apis.TransactionsResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "TxPool.GetPending", nil, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetPending", nil, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -34,7 +34,7 @@ func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
 
 func (txpool *ApiTxPool) GetQueue() (*apis.TransactionsResp, error) {
 	result := new(apis.TransactionsResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -42,7 +42,7 @@ func (txpool *ApiTxPool) GetQueue() (*apis.TransactionsResp, error) {
 
 func (txpool *ApiTxPool) GetPendingSize() (*int, error) {
 	var result *int
-	if err := apis.XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -59,7 +59,7 @@ func (txpool *ApiTxPool) GetTranByHash(hash string) (*apis.TransactionResp, erro
 	}
 
 	result := new(apis.TransactionResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "TxPool.GetTranByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetTranByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -70,7 +70,7 @@ func (txpool *ApiTxPool) GetAddrTxNonce(address string) (*int64, error) {
 		Address: address,
 	}
 	var result *int64
-	if err := apis.XFSCLICENT.CallMethod(1, "TxPool.GetAddrTxNonce", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetAddrTxNonce", &req, &result); err != nil {
 		return nil, err
 	}
 
@@ -82,7 +82,7 @@ func (txpool *ApiTxPool) SendRawTransaction(data string) (*string, error) {
 		Data: data,
 	}
 	var result *string
-	if err := apis.XFSCLICENT.CallMethod(1, "TxPool.SendRawTransaction", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.SendRawTransaction", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil

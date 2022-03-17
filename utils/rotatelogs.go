@@ -2,13 +2,12 @@ package utils
 
 import (
 	"os"
-	"xfschainbrowser/conf"
 
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap/zapcore"
 )
 
-func GetWriteSyncer(file string) zapcore.WriteSyncer {
+func GetWriteSyncer(LogInConsole bool, file string) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
 		Filename:   file, // 日志文件的位置
 		MaxSize:    10,   // 在进行切割之前，日志文件的最大大小（以MB为单位）
@@ -17,7 +16,7 @@ func GetWriteSyncer(file string) zapcore.WriteSyncer {
 		Compress:   true, // 是否压缩/归档旧文件
 	}
 
-	if conf.LogInConsole {
+	if LogInConsole {
 		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(lumberJackLogger))
 	}
 	return zapcore.AddSync(lumberJackLogger)

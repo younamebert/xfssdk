@@ -37,7 +37,7 @@ func (chain *ApiChain) GetBlockByNumber(number string) (*apis.BlockResp, error) 
 		Number: number,
 	}
 	result := new(apis.BlockResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockByNumber", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockByNumber", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -58,7 +58,7 @@ func (chain *ApiChain) GetBlockHashes(startHeight, endHeight string) (*apis.Hash
 	}
 
 	result := new(apis.Hashes)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockHashes", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockHashes", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -67,7 +67,7 @@ func (chain *ApiChain) GetBlockHashes(startHeight, endHeight string) (*apis.Hash
 //GetHead 获取链上最新的区块
 func (chain *ApiChain) GetHead() (*apis.BlockHeaderResp, error) {
 	result := new(apis.BlockHeaderResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.Head", nil, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.Head", nil, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -81,7 +81,7 @@ func (chain *ApiChain) GetBlockHeaderByNumber(number string) (*apis.BlockHeaderR
 		Number: number,
 	}
 	result := new(apis.BlockHeaderResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockHeaderByNumber", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockHeaderByNumber", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -93,7 +93,7 @@ func (chain *ApiChain) GetBlockHeaderByHash(hash string) (*apis.BlockHeaderResp,
 		Hash: hash,
 	}
 	result := new(apis.BlockHeaderResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockHeaderByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockHeaderByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -105,7 +105,7 @@ func (chain *ApiChain) GetBlockByHash(hash string) (*apis.BlockResp, error) {
 		Hash: hash,
 	}
 	result := new(apis.BlockResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -119,7 +119,7 @@ func (chain *ApiChain) GetTxsByBlockNum(number string) (*apis.TransactionsResp, 
 		Number: number,
 	}
 	result := new(apis.TransactionsResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetTxsByBlockNum", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetTxsByBlockNum", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -131,7 +131,7 @@ func (chain *ApiChain) GetTxsByBlockHash(hash string) (*apis.TransactionsResp, e
 		Hash: hash,
 	}
 	result := new(apis.TransactionsResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetTxsByBlockHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetTxsByBlockHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -143,7 +143,7 @@ func (chain *ApiChain) GetReceiptByHash(hash string) (*apis.ReceiptResp, error) 
 		Hash: hash,
 	}
 	result := new(apis.ReceiptResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetReceiptByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetReceiptByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -155,7 +155,7 @@ func (chain *ApiChain) GetTransaction(txhash string) (*apis.TransactionResp, err
 		Hash: txhash,
 	}
 	result := new(apis.TransactionResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetTransaction", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetTransaction", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -168,7 +168,7 @@ func (chain *ApiChain) GetTransaction(txhash string) (*apis.TransactionResp, err
 // - highestBlock:  block number of the highest block header this node has received from peers
 // func (chain *ApiChain) GetSyncStatus() (apis.ChainStatusResp, error) {
 // 	result := new(apis.ChainStatusResp)
-// 	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetSyncStatus", nil, &result); err != nil {
+// 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetSyncStatus", nil, &result); err != nil {
 // 		return nil, err
 // 	}
 // 	return result, nil
@@ -176,7 +176,7 @@ func (chain *ApiChain) GetTransaction(txhash string) (*apis.TransactionResp, err
 
 // func (chain *ApiChain) GetSyncStatus() (apis.ChainStatusResp, error) {
 // 	result := new(apis.ChainStatusResp)
-// 	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetSyncStatus", nil, &result); err != nil {
+// 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetSyncStatus", nil, &result); err != nil {
 // 		return nil, err
 // 	}
 // 	return result, nil
@@ -187,7 +187,7 @@ func (chain *ApiChain) GetBlockTxCountByHash(hash string) (*int, error) {
 		Hash: hash,
 	}
 	var result *int
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -201,7 +201,7 @@ func (chain *ApiChain) GetBlockTxCountByNum(number string) (*int, error) {
 		Number: number,
 	}
 	var result *int
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -214,7 +214,7 @@ func (chain *ApiChain) GetBlockTxByHashAndIndex(hash string, index int) (*apis.T
 		Index: index,
 	}
 	result := new(apis.TransactionResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -230,7 +230,7 @@ func (chain *ApiChain) GetBlockTxByNumAndIndex(number string, index int) (*apis.
 	}
 
 	result := new(apis.TransactionResp)
-	if err := apis.XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetBlockTxCountByHash", &req, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
