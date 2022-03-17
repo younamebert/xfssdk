@@ -7,9 +7,10 @@ import (
 	"encoding/binary"
 	"errors"
 	"math/big"
-	"xfssdk/common"
-	"xfssdk/libs/ahash"
-	"xfssdk/libs/crypto/secp256k1"
+
+	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/libs/ahash"
+	"github.com/younamebert/xfssdk/libs/crypto/secp256k1"
 )
 
 const defaultKeyPackType = uint8(1)

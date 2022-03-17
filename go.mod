@@ -1,4 +1,4 @@
-module xfssdk
+module github.com/younamebert/xfssdk
 
 go 1.16
 

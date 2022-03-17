@@ -2,7 +2,8 @@ package checkprikey
 
 import (
 	"fmt"
-	"xfssdk/libs/crypto"
+
+	"github.com/younamebert/xfssdk/libs/crypto"
 )
 
 type CheckPriKeyWay interface {

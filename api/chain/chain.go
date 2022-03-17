@@ -1,8 +1,8 @@
 package apichain
 
 import (
-	"xfssdk/common"
-	"xfssdk/core/apis"
+	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/core/apis"
 )
 
 type ChainLink interface {

@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"os"
-	"xfssdk/api"
-	"xfssdk/common"
-	"xfssdk/core/apis"
-	"xfssdk/libs/client"
+
+	"github.com/younamebert/xfssdk/api"
+	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/core/apis"
+	"github.com/younamebert/xfssdk/libs/client"
 )
 
 func main() {

@@ -5,8 +5,9 @@ import (
 	"math/big"
 	"sort"
 	"strconv"
-	"xfssdk/common"
-	"xfssdk/libs/crypto"
+
+	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/libs/crypto"
 )
 
 type Transaction struct {

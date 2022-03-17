@@ -1,10 +1,10 @@
 package api
 
 import (
-	apichain "xfssdk/api/chain"
-	apinet "xfssdk/api/net"
-	apistate "xfssdk/api/state"
-	apitxpool "xfssdk/api/txpool"
+	apichain "github.com/younamebert/xfssdk/api/chain"
+	apinet "github.com/younamebert/xfssdk/api/net"
+	apistate "github.com/younamebert/xfssdk/api/state"
+	apitxpool "github.com/younamebert/xfssdk/api/txpool"
 )
 
 type ApiMethod struct {

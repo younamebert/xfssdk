@@ -1,7 +1,7 @@
 package apistate
 
 import (
-	"xfssdk/core/apis"
+	"github.com/younamebert/xfssdk/core/apis"
 )
 
 type StateLink interface {

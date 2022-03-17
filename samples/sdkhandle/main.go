@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"xfssdk"
-	"xfssdk/common"
+
+	"github.com/younamebert/xfssdk"
+	"github.com/younamebert/xfssdk/common"
 )
 
 func main() {

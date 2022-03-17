@@ -1,6 +1,6 @@
 package apis
 
-import "xfssdk/libs/client"
+import "github.com/younamebert/xfssdk/libs/client"
 
 var GVA_XFSCLICENT = new(client.Client)
 

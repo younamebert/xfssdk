@@ -9,7 +9,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-	"xfssdk/global"
+
+	"github.com/younamebert/xfssdk/global"
 )
 
 type Client struct {

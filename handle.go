@@ -1,13 +1,13 @@
 package xfssdk
 
 import (
-	"xfssdk/api"
-	"xfssdk/config"
-	"xfssdk/core"
-	"xfssdk/core/apis"
-	"xfssdk/exactly"
-	"xfssdk/global"
-	"xfssdk/libs/client"
+	"github.com/younamebert/xfssdk/api"
+	"github.com/younamebert/xfssdk/config"
+	"github.com/younamebert/xfssdk/core"
+	"github.com/younamebert/xfssdk/core/apis"
+	"github.com/younamebert/xfssdk/exactly"
+	"github.com/younamebert/xfssdk/global"
+	"github.com/younamebert/xfssdk/libs/client"
 )
 
 type Handle struct {

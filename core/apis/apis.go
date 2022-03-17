@@ -2,7 +2,8 @@ package apis
 
 import (
 	"math/big"
-	"xfssdk/common"
+
+	"github.com/younamebert/xfssdk/common"
 )
 
 type BlockResp struct {

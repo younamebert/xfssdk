@@ -6,8 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"xfssdk/common"
-	"xfssdk/libs/ahash"
+
+	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/libs/ahash"
 )
 
 type InspectTxWay interface {

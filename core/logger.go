@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"xfssdk/config"
+
+	"github.com/younamebert/xfssdk/config"
 
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"

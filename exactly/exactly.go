@@ -1,8 +1,8 @@
 package exactly
 
 import (
-	"xfssdk/exactly/checkprikey"
-	"xfssdk/exactly/inspecttx"
+	"github.com/younamebert/xfssdk/exactly/checkprikey"
+	"github.com/younamebert/xfssdk/exactly/inspecttx"
 )
 
 type Exactly struct {

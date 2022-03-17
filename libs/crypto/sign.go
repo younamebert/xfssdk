@@ -5,8 +5,9 @@ import (
 	"crypto/elliptic"
 	"encoding/hex"
 	"fmt"
-	"xfssdk/common"
-	"xfssdk/libs/crypto/secp256k1"
+
+	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/libs/crypto/secp256k1"
 )
 
 func ECDSASign2Hex(hash []byte, prv *ecdsa.PrivateKey) (string, error) {

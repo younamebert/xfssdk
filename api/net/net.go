@@ -1,6 +1,6 @@
 package apinet
 
-import "xfssdk/core/apis"
+import "github.com/younamebert/xfssdk/core/apis"
 
 type NetLink interface {
 	GetNodeId() (*string, error)
