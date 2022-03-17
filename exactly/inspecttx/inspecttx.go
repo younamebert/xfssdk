@@ -4,80 +4,70 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/younamebert/xfssdk/common"
-	"github.com/younamebert/xfssdk/libs/ahash"
+	"github.com/younamebert/xfssdk/libs/crypto"
 )
 
 type InspectTxWay interface {
-	SignHashByData(dataraw string) (common.Hash, error)
-	SignHash(tx *Transaction) (common.Hash, error)
+	NewRawTransaction(fromprikey string, tx *StringRawTransaction) (*StringRawTransaction, error)
+	GetFromAddress(fromprikey string) (common.Address, error)
+	CoverTransaction(fromprikey, dataraw string) (*StringRawTransaction, error)
 }
 
-type InspectTx struct {
+type InspectTx struct{}
+
+//GetFromAddress 根据from的私钥获取地址
+func (inspecttx *InspectTx) GetFromAddress(fromprikey string) (common.Address, error) {
+
+	keyEnc := fromprikey
+
+	if keyEnc[0] == '0' && keyEnc[1] == 'x' {
+		keyEnc = keyEnc[2:]
+	} else {
+		return common.Address{}, errors.New("binary forward backward error")
+	}
+
+	keyDer, err := hex.DecodeString(keyEnc)
+	if err != nil {
+		return common.Address{}, err
+	}
+
+	_, pKey, err := crypto.DecodePrivateKey(keyDer)
+	if err != nil {
+		return common.Address{}, err
+	}
+
+	addr := crypto.DefaultPubKey2Addr(pKey.PublicKey)
+	return addr, nil
 }
 
-func (inspecttx *InspectTx) SignHashByData(dataraw string) (common.Hash, error) {
+//NewRawTransaction 创建一个签名交易
+func (inspecttx *InspectTx) NewRawTransaction(fromprikey string, tx *StringRawTransaction) (*StringRawTransaction, error) {
+
+	if err := tx.SignWithPrivateKey(fromprikey); err != nil {
+		return nil, err
+	}
+	return tx, nil
+}
+
+//CoverTransaction 解码一个签名交易转tx对象
+func (inspecttx *InspectTx) CoverTransaction(fromprikey, dataraw string) (*StringRawTransaction, error) {
+
 	databytes, err := base64.StdEncoding.DecodeString(dataraw)
 	if err != nil {
-		return common.Hash{}, fmt.Errorf("failed to parse data: %s", err)
+		return nil, err
 	}
+
 	rawtx := &StringRawTransaction{}
 	if err := json.Unmarshal(databytes, rawtx); err != nil {
-		return common.Hash{}, fmt.Errorf("failed to parse data: %s", err)
-	}
-	tx, err := coverTransaction(rawtx)
-	if err != nil {
-		return common.Hash{}, err
+		return nil, fmt.Errorf("failed to parse data: %s", err)
 	}
 
-	data := ""
-	if tx.Data != nil && len(tx.Data) > 0 {
-		data = "0x" + hex.EncodeToString([]byte(tx.Data))
+	if err := rawtx.SignWithPrivateKey(fromprikey); err != nil {
+		return nil, err
 	}
-	tmp := map[string]string{
-		"version":   strconv.FormatInt(int64(tx.Version), 10),
-		"to":        tx.To.String(),
-		"gas_price": tx.GasPrice.Text(10),
-		"gas_limit": tx.GasLimit.Text(10),
-		"data":      data,
-		"nonce":     strconv.Itoa(int(tx.Nonce)),
-		"value":     tx.Value.Text(10),
-	}
-	enc := sortAndEncodeMap(tmp)
-	if enc == "" {
-		return common.Hash{}, fmt.Errorf("sortAndEncodeMap err")
-	}
-	return common.Bytes2Hash(ahash.SHA256([]byte(enc))), nil
-}
-
-func (inspecttx *InspectTx) SignHash(tx *Transaction) (common.Hash, error) {
-
-	if tx.To.Equals(common.Address{}) {
-		return common.Hash{}, fmt.Errorf("transfer to not nil")
-	}
-	if tx.From.Equals(common.Address{}) {
-		return common.Hash{}, fmt.Errorf("transfer from not nil")
-	}
-
-	data := ""
-	if tx.Data != nil && len(tx.Data) > 0 {
-		data = "0x" + hex.EncodeToString([]byte(tx.Data))
-	}
-	tmp := map[string]string{
-		"version":   strconv.FormatInt(int64(tx.Version), 10),
-		"to":        tx.To.String(),
-		"gas_price": tx.GasPrice.Text(10),
-		"gas_limit": tx.GasLimit.Text(10),
-		"data":      data,
-		"nonce":     strconv.Itoa(int(tx.Nonce)),
-		"value":     tx.Value.Text(10),
-	}
-	enc := sortAndEncodeMap(tmp)
-	if enc == "" {
-		return common.Hash{}, fmt.Errorf("sortAndEncodeMap err")
-	}
-	return common.Bytes2Hash(ahash.SHA256([]byte(enc))), nil
+	return rawtx, nil
 }

@@ -1,26 +1,29 @@
 package inspecttx
 
 import (
+	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"math/big"
 	"sort"
-	"strconv"
 
 	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/libs/ahash"
 	"github.com/younamebert/xfssdk/libs/crypto"
 )
 
-type Transaction struct {
-	Version   uint32         `json:"version"`
-	From      common.Address `json:"from"`
-	To        common.Address `json:"to"`
-	GasPrice  *big.Int       `json:"gas_price"`
-	GasLimit  *big.Int       `json:"gas_limit"`
-	Data      []byte         `json:"data"`
-	Nonce     uint64         `json:"nonce"`
-	Value     *big.Int       `json:"value"`
-	Signature []byte         `json:"signature"`
-}
+// type Transaction struct {
+// 	Version   uint32         `json:"version"`
+// 	From      common.Address `json:"from"`
+// 	To        common.Address `json:"to"`
+// 	GasPrice  *big.Int       `json:"gas_price"`
+// 	GasLimit  *big.Int       `json:"gas_limit"`
+// 	Data      []byte         `json:"data"`
+// 	Nonce     uint64         `json:"nonce"`
+// 	Value     *big.Int       `json:"value"`
+// 	Signature []byte         `json:"signature"`
+// }
 
 type StringRawTransaction struct {
 	Version   string `json:"version"`
@@ -33,46 +36,63 @@ type StringRawTransaction struct {
 	Nonce     string `json:"nonce"`
 }
 
-func coverTransaction(r *StringRawTransaction) (*Transaction, error) {
-	version, err := strconv.ParseInt(r.Version, 10, 32)
+func (tx *StringRawTransaction) SignWithPrivateKey(fromprikey string) error {
+
+	keyEnc := fromprikey
+	if keyEnc[0] == '0' && keyEnc[1] == 'x' {
+		keyEnc = keyEnc[2:]
+	} else {
+		return errors.New("binary forward backward error")
+	}
+
+	keyDer, err := hex.DecodeString(keyEnc)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse version: %s", err)
+		return err
 	}
-	toaddr := common.ZeroAddr
-	if r.To != "" {
-		toaddr = common.StrB58ToAddress(r.To)
-		if !crypto.VerifyAddress(toaddr) {
-			return nil, fmt.Errorf("failed to verify 'to' address: %s", r.To)
-		}
-	} else if r.Data == "" {
-		return nil, fmt.Errorf("failed to parse 'to' address")
-	}
-	gasprice, ok := new(big.Int).SetString(r.GasPrice, 10)
-	if !ok {
-		return nil, fmt.Errorf("failed to parse gasprice")
-	}
-	gaslimit, ok := new(big.Int).SetString(r.GasLimit, 10)
-	if !ok {
-		return nil, fmt.Errorf("failed to parse gasprice")
-	}
-	data := common.Hex2bytes(r.Data)
-	nonce, err := strconv.ParseInt(r.Nonce, 10, 64)
+
+	_, key, err := crypto.DecodePrivateKey(keyDer)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse nonce: %s", err)
+		return err
 	}
-	value, ok := new(big.Int).SetString(r.Value, 10)
-	if !ok {
-		return nil, fmt.Errorf("failed to parse value")
+
+	hash := tx.signHash()
+	sig, err := crypto.ECDSASign(hash.Bytes(), key)
+	if err != nil {
+		return err
 	}
-	return &Transaction{
-		Version:  uint32(version),
-		To:       toaddr,
-		GasPrice: gasprice,
-		GasLimit: gaslimit,
-		Data:     data,
-		Nonce:    uint64(nonce),
-		Value:    value,
-	}, nil
+	tx.Signature = hex.EncodeToString(sig)
+	return nil
+}
+
+func (tx *StringRawTransaction) RawTx() (string, error) {
+	bs, err := json.Marshal(tx)
+	if err != nil {
+		return "", err
+	}
+	result := base64.StdEncoding.EncodeToString(bs)
+	return result, nil
+}
+
+func (tx *StringRawTransaction) signHash() common.Hash {
+	//nt := t.copyTrim()
+	data := ""
+	// if tx.Data != "" {
+	// 	data = "0x" + hex.EncodeToString(tx.Data)
+	// }
+	tmp := map[string]string{
+		"version":   tx.Value,
+		"to":        tx.To,
+		"gas_price": tx.GasPrice,
+		"gas_limit": tx.GasLimit,
+		"data":      data,
+		"nonce":     tx.Nonce,
+		"value":     tx.Value,
+	}
+	enc := sortAndEncodeMap(tmp)
+	if enc == "" {
+		return common.Hash{}
+	}
+	return common.Bytes2Hash(ahash.SHA256([]byte(enc)))
 }
 
 func sortAndEncodeMap(data map[string]string) string {

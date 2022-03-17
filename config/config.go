@@ -41,7 +41,7 @@ func DefaultHandleConfig() *HandleConfig {
 	return &HandleConfig{
 		Networkid:       1,
 		Version:         1,
-		NodeLink:        "https://api.scan.xfs.tech/jsonrpc/v2/",
+		NodeLink:        "http://127.0.0.1:9012/", // https://api.scan.xfs.tech/jsonrpc/v2/
 		NodeLinkOutTime: "5s",
 		Logger:          DefaultLoggerConfig(),
 	}
