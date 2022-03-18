@@ -66,7 +66,7 @@ func main() {
    $ godoc  -goroot=. -http=:6061
    ```
 
-## 例子
+### 例子
 
 在[示例文件夹](https://github.com/younamebert/xfssdk/tree/main/examples)中，您可以找到一个发送一笔交易或者获取链状态来帮助您开始使用**xfssdk**。
 
