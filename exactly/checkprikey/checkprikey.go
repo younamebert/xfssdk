@@ -12,9 +12,10 @@ type CheckPriKeyWay interface {
 	CheckWalletPriKey(der string) error
 }
 
-type CheckPriKey struct {
-}
+// CheckPriKey 私钥验证对象
+type CheckPriKey struct{}
 
+// CheckWalletPriKey 验证一个私钥是否符合规则
 func (checkprikey *CheckPriKey) CheckWalletPriKey(der string) error {
 
 	keyEnc := der

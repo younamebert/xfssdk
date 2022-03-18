@@ -13,16 +13,10 @@ type TxPoolLink interface {
 	SendRawTransaction(data string) (*string, error)
 }
 
-type ApiTxPool struct {
-	// GVA_XFSCLICENT *client.Client
-}
+// ApiTxPool 节点交易池状态结构体
+type ApiTxPool struct{}
 
-// func NewApiTxPool(cli *client.Client) *ApiTxPool {
-// 	return &ApiTxPool{
-// 		GVA_XFSCLICENT: cli,
-// 	}
-// }
-
+// GetPending 获取交易池的pending队列所有的交易信息
 func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
 
 	result := new(apis.TransactionsResp)
@@ -32,6 +26,7 @@ func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
 	return result, nil
 }
 
+// GetQueue 获取交易池的queue队列所有的交易信息
 func (txpool *ApiTxPool) GetQueue() (*apis.TransactionsResp, error) {
 	result := new(apis.TransactionsResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
@@ -40,6 +35,7 @@ func (txpool *ApiTxPool) GetQueue() (*apis.TransactionsResp, error) {
 	return result, nil
 }
 
+// GetPendingSize 获取当前交易池的可以执行交易数量
 func (txpool *ApiTxPool) GetPendingSize() (*int, error) {
 	var result *int
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
@@ -48,11 +44,7 @@ func (txpool *ApiTxPool) GetPendingSize() (*int, error) {
 	return result, nil
 }
 
-// func (tx *TxPoolHandler) Clear(_ EmptyArgs, resp *string) error {
-// 	tx.TxPool.RemoveTransactions(tx.TxPool.GetTransactions())
-// 	return nil
-// }
-
+// GetTranByHash 指定交易txhash在交易池获取交易信息
 func (txpool *ApiTxPool) GetTranByHash(hash string) (*apis.TransactionResp, error) {
 	req := &GetTranByHashArgs{
 		Hash: hash,

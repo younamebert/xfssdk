@@ -17,6 +17,7 @@ type XFSLogger struct {
 	conf *config.LoggerConfig
 }
 
+// NewXFSLogger 初始化日志
 func NewXFSLogger(conf *config.LoggerConfig) *XFSLogger {
 	return &XFSLogger{
 		conf: conf,

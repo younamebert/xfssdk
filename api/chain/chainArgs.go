@@ -11,13 +11,14 @@ type GetBlockByHashArgs struct {
 type GetTxsByBlockNumArgs struct {
 	Number string `json:"number"`
 }
+
 type GetTxbyBlockHashArgs struct {
 	Hash string `json:"hash"`
 }
 
-type GetBalanceOfAddressArgs struct {
-	Address string `json:"address"`
-}
+// type GetBalanceOfAddressArgs struct {
+// 	Address string `json:"address"`
+// }
 
 type GetTransactionArgs struct {
 	Hash string `json:"hash"`

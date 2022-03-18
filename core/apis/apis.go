@@ -12,13 +12,13 @@ type BlockResp struct {
 	HashPrevBlock common.Hash    `json:"hash_prev_block"`
 	Timestamp     uint64         `json:"timestamp"`
 	Coinbase      common.Address `json:"coinbase"`
-	// merkle tree root hash
+
 	StateRoot        common.Hash `json:"state_root"`
 	TransactionsRoot common.Hash `json:"transactions_root"`
 	ReceiptsRoot     common.Hash `json:"receipts_root"`
 	GasLimit         *big.Int    `json:"gas_limit"`
 	GasUsed          *big.Int    `json:"gas_used"`
-	// pow
+
 	Bits         uint32           `json:"bits"`
 	Nonce        uint32           `json:"nonce"`
 	ExtraNonce   uint64           `json:"extranonce"`
@@ -39,7 +39,6 @@ type TransactionResp struct {
 	Signature []byte         `json:"signature"`
 }
 
-// type transactions []*xfsgo.Transaction
 type TransactionsResp []*TransactionResp
 
 type ReceiptResp struct {
@@ -59,13 +58,13 @@ type BlockHeaderResp struct {
 	HashPrevBlock common.Hash    `json:"hash_prev_block"`
 	Timestamp     uint64         `json:"timestamp"`
 	Coinbase      common.Address `json:"coinbase"`
-	// merkle tree root hash
+
 	StateRoot        common.Hash `json:"state_root"`
 	TransactionsRoot common.Hash `json:"transactions_root"`
 	ReceiptsRoot     common.Hash `json:"receipts_root"`
 	GasLimit         *big.Int    `json:"gas_limit"`
 	GasUsed          *big.Int    `json:"gas_used"`
-	// pow
+
 	Bits       uint32      `json:"bits"`
 	Nonce      uint32      `json:"nonce"`
 	ExtraNonce uint64      `json:"extranonce"`

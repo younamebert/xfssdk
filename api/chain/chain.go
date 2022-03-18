@@ -22,12 +22,10 @@ type ChainLink interface {
 	GetBlockTxByNumAndIndex(number string, index int) (*apis.TransactionResp, error)
 }
 
+// ApiChain 区块链状态结构体
 type ApiChain struct{}
 
-// func NewApiChain() *ApiChain {
-// 	return ne
-// }
-//GetBlockByNumber 根据区块高度获取区块信息
+// GetBlockByNumber 根据区块高度获取区块信息
 func (chain *ApiChain) GetBlockByNumber(number string) (*apis.BlockResp, error) {
 
 	if err := common.Str2Int64(number); err != nil {
@@ -43,7 +41,7 @@ func (chain *ApiChain) GetBlockByNumber(number string) (*apis.BlockResp, error) 
 	return result, nil
 }
 
-//GetBlockHashes 获取指定范围链区块的hash集合
+// GetBlockHashes 获取指定范围链区块的hash集合
 func (chain *ApiChain) GetBlockHashes(startHeight, endHeight string) (*apis.Hashes, error) {
 
 	if err := common.Str2Int64(startHeight); err != nil {
@@ -64,7 +62,7 @@ func (chain *ApiChain) GetBlockHashes(startHeight, endHeight string) (*apis.Hash
 	return result, nil
 }
 
-//GetHead 获取链上最新的区块
+// GetHead 查询最高区块的header
 func (chain *ApiChain) GetHead() (*apis.BlockHeaderResp, error) {
 	result := new(apis.BlockHeaderResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.Head", nil, &result); err != nil {
@@ -73,6 +71,7 @@ func (chain *ApiChain) GetHead() (*apis.BlockHeaderResp, error) {
 	return result, nil
 }
 
+// GetBlockHeaderByNumber 指定区块链的高度查询blockheader信息
 func (chain *ApiChain) GetBlockHeaderByNumber(number string) (*apis.BlockHeaderResp, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err
@@ -87,6 +86,7 @@ func (chain *ApiChain) GetBlockHeaderByNumber(number string) (*apis.BlockHeaderR
 	return result, nil
 }
 
+// GetBlockHeaderByHash 指定区块hash查询blockheader信息
 func (chain *ApiChain) GetBlockHeaderByHash(hash string) (*apis.BlockHeaderResp, error) {
 
 	req := &GetBlockHeaderByHashArgs{
@@ -99,6 +99,7 @@ func (chain *ApiChain) GetBlockHeaderByHash(hash string) (*apis.BlockHeaderResp,
 	return result, nil
 }
 
+// GetBlockByHash 指定区块hash查询blockheader信息
 func (chain *ApiChain) GetBlockByHash(hash string) (*apis.BlockResp, error) {
 
 	req := &GetBlockByHashArgs{
@@ -111,6 +112,7 @@ func (chain *ApiChain) GetBlockByHash(hash string) (*apis.BlockResp, error) {
 	return result, nil
 }
 
+// GetTxsByBlockNum 指定区块高度获取该block所有的交易信息
 func (chain *ApiChain) GetTxsByBlockNum(number string) (*apis.TransactionsResp, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err
@@ -125,6 +127,7 @@ func (chain *ApiChain) GetTxsByBlockNum(number string) (*apis.TransactionsResp, 
 	return result, nil
 }
 
+// GetTxsByBlockHash 指定区块hash获取该高度所有的交易信息
 func (chain *ApiChain) GetTxsByBlockHash(hash string) (*apis.TransactionsResp, error) {
 
 	req := &GetTxbyBlockHashArgs{
@@ -137,6 +140,7 @@ func (chain *ApiChain) GetTxsByBlockHash(hash string) (*apis.TransactionsResp, e
 	return result, nil
 }
 
+// GetReceiptByHash 指定交易txhash获取交易回执信息
 func (chain *ApiChain) GetReceiptByHash(txhash string) (*apis.ReceiptResp, error) {
 
 	req := &GetReceiptByHashArgs{
@@ -149,6 +153,7 @@ func (chain *ApiChain) GetReceiptByHash(txhash string) (*apis.ReceiptResp, error
 	return result, nil
 }
 
+// GetTransaction 指定交易txhash获取交易信息
 func (chain *ApiChain) GetTransaction(txhash string) (*apis.TransactionResp, error) {
 
 	req := &GetTransactionArgs{
@@ -161,27 +166,7 @@ func (chain *ApiChain) GetTransaction(txhash string) (*apis.TransactionResp, err
 	return result, nil
 }
 
-// Syncing returns false in case the node is currently not syncing with the network. It can be up to date or has not
-// yet received the latest block headers from its pears. In case it is synchronizing:
-// - startingBlock: block number this node started to synchronise from
-// - currentBlock:  block number this node is currently importing
-// - highestBlock:  block number of the highest block header this node has received from peers
-// func (chain *ApiChain) GetSyncStatus() (apis.ChainStatusResp, error) {
-// 	result := new(apis.ChainStatusResp)
-// 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetSyncStatus", nil, &result); err != nil {
-// 		return nil, err
-// 	}
-// 	return result, nil
-// }
-
-// func (chain *ApiChain) GetSyncStatus() (apis.ChainStatusResp, error) {
-// 	result := new(apis.ChainStatusResp)
-// 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetSyncStatus", nil, &result); err != nil {
-// 		return nil, err
-// 	}
-// 	return result, nil
-// }
-
+// GetBlockTxCountByHash 获取指定区块hash获取所有交易的数量
 func (chain *ApiChain) GetBlockTxCountByHash(hash string) (*int, error) {
 	req := &GetBlockTxCountByHashArgs{
 		Hash: hash,
@@ -193,6 +178,7 @@ func (chain *ApiChain) GetBlockTxCountByHash(hash string) (*int, error) {
 	return result, nil
 }
 
+// GetBlockTxCountByNum 获取指定区块height获取所有交易的数量
 func (chain *ApiChain) GetBlockTxCountByNum(number string) (*int, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err
@@ -207,6 +193,7 @@ func (chain *ApiChain) GetBlockTxCountByNum(number string) (*int, error) {
 	return result, nil
 }
 
+// GetBlockTxByHashAndIndex 指定区块hash和指定交易集合的index查询该交易信息
 func (chain *ApiChain) GetBlockTxByHashAndIndex(hash string, index int) (*apis.TransactionResp, error) {
 
 	req := &GetBlockTxByHashAndIndexArgs{
@@ -220,6 +207,7 @@ func (chain *ApiChain) GetBlockTxByHashAndIndex(hash string, index int) (*apis.T
 	return result, nil
 }
 
+// GetBlockTxByNumAndIndex 指定区块height和指定交易集合的index查询该交易信息
 func (chain *ApiChain) GetBlockTxByNumAndIndex(number string, index int) (*apis.TransactionResp, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err

@@ -7,6 +7,7 @@ import (
 	apitxpool "github.com/younamebert/xfssdk/api/txpool"
 )
 
+// ApiMethod 节点链方法集合结构体
 type ApiMethod struct {
 	Chain  apichain.ChainLink
 	Net    apinet.NetLink

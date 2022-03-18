@@ -25,6 +25,7 @@ import (
 // 	Signature []byte         `json:"signature"`
 // }
 
+// StringRawTransaction 交易结构体
 type StringRawTransaction struct {
 	Version   string `json:"version"`
 	To        string `json:"to"`
@@ -36,6 +37,7 @@ type StringRawTransaction struct {
 	Nonce     string `json:"nonce"`
 }
 
+// SignWithPrivateKey 生成一个交易签名
 func (tx *StringRawTransaction) SignWithPrivateKey(fromprikey string) error {
 
 	keyEnc := fromprikey
@@ -55,7 +57,7 @@ func (tx *StringRawTransaction) SignWithPrivateKey(fromprikey string) error {
 		return err
 	}
 
-	hash := tx.signHash()
+	hash := tx.SignHash()
 	sig, err := crypto.ECDSASign(hash.Bytes(), key)
 	if err != nil {
 		return err
@@ -64,6 +66,7 @@ func (tx *StringRawTransaction) SignWithPrivateKey(fromprikey string) error {
 	return nil
 }
 
+// RawTx 交易对象编码base64格式
 func (tx *StringRawTransaction) RawTx() (string, error) {
 	bs, err := json.Marshal(tx)
 	if err != nil {
@@ -73,18 +76,16 @@ func (tx *StringRawTransaction) RawTx() (string, error) {
 	return result, nil
 }
 
-func (tx *StringRawTransaction) signHash() common.Hash {
+// signHash 生成交易hash
+func (tx *StringRawTransaction) SignHash() common.Hash {
 	//nt := t.copyTrim()
-	data := ""
-	// if tx.Data != "" {
-	// 	data = "0x" + hex.EncodeToString(tx.Data)
-	// }
+
 	tmp := map[string]string{
 		"version":   tx.Value,
 		"to":        tx.To,
 		"gas_price": tx.GasPrice,
 		"gas_limit": tx.GasLimit,
-		"data":      data,
+		"data":      tx.Data,
 		"nonce":     tx.Nonce,
 		"value":     tx.Value,
 	}

@@ -16,6 +16,7 @@ type Handle struct {
 	ApiMethod *api.ApiMethod
 }
 
+// Default 创建一个handle对象
 func Default() *Handle {
 	handle := &Handle{
 		Config:    config.DefaultHandleConfig(),
@@ -32,6 +33,7 @@ func Default() *Handle {
 	return handle
 }
 
+// New 通过handleconfig和loggerconfig创建一个handle对象
 func New(handleconf *config.HandleConfig, loggerconf *config.LoggerConfig) *Handle {
 	handle := new(Handle)
 	handle.Config = config.NewHandleConfig(handleconf, loggerconf)

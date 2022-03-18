@@ -11,9 +11,10 @@ type StateLink interface {
 	GetAccountByHash(address string, roothash string) (*apis.StateObjResp, error)
 }
 
-type ApiState struct {
-}
+// ApiState 账户状态结构体
+type ApiState struct{}
 
+// GetBalance 指定账户地址查看账户余额
 func (state *ApiState) GetBalance(address string) (*string, error) {
 	req := &GetBalanceArgs{
 		Address: address,
@@ -25,6 +26,7 @@ func (state *ApiState) GetBalance(address string) (*string, error) {
 	return result, nil
 }
 
+// GetBalanceByHash 指定账户地址和区块hash查看账户余额
 func (state *ApiState) GetBalanceByHash(address string, roothash string) (*string, error) {
 	req := &GetBalanceArgs{
 		Address:  address,
@@ -37,6 +39,7 @@ func (state *ApiState) GetBalanceByHash(address string, roothash string) (*strin
 	return result, nil
 }
 
+// GetAccount 指定账户地址获取账户信息
 func (state *ApiState) GetAccount(address string) (*apis.StateObjResp, error) {
 	req := &GetAccountArgs{
 		Address: address,
@@ -48,6 +51,7 @@ func (state *ApiState) GetAccount(address string) (*apis.StateObjResp, error) {
 	return result, nil
 }
 
+// GetAccountByHash 指定账户地址和区块hash查看账户信息
 func (state *ApiState) GetAccountByHash(address string, roothash string) (*apis.StateObjResp, error) {
 	req := &GetAccountArgs{
 		Address:  address,

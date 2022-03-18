@@ -6,9 +6,8 @@ type NetLink interface {
 	GetNodeId() (*string, error)
 }
 
-type ApiNet struct {
-	// GVA_XFSCLICENT *client.Client
-}
+// ApiNet 区块链网络状态结构体
+type ApiNet struct{}
 
 // func (net *ApiNet) GetPeers() ([]string, error) {
 // 	result := make([]string, 0)
@@ -24,6 +23,7 @@ type ApiNet struct {
 // 	}
 // }
 
+// GetNodeId 获取当前节点链nodeid
 func (net *ApiNet) GetNodeId() (*string, error) {
 	var result *string
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Net.GetPeers", nil, &result); err != nil {
