@@ -17,10 +17,9 @@ type InspectTxWay interface {
 	CoverTransaction(fromprikey, dataraw string) (*StringRawTransaction, error)
 }
 
-// InspectTx 检查生产签名交易结构体
 type InspectTx struct{}
 
-//GetFromAddress 通过私钥获取地址
+// GetFromAddress get address through private key
 func (inspecttx *InspectTx) GetFromAddress(fromprikey string) (common.Address, error) {
 
 	keyEnc := fromprikey
@@ -45,7 +44,7 @@ func (inspecttx *InspectTx) GetFromAddress(fromprikey string) (common.Address, e
 	return addr, nil
 }
 
-// NewRawTransaction 创建一个签名交易
+// NewRawTransaction Create a signed transaction
 func (inspecttx *InspectTx) NewRawTransaction(fromprikey string, tx *StringRawTransaction) (*StringRawTransaction, error) {
 
 	if err := tx.SignWithPrivateKey(fromprikey); err != nil {
@@ -54,7 +53,7 @@ func (inspecttx *InspectTx) NewRawTransaction(fromprikey string, tx *StringRawTr
 	return tx, nil
 }
 
-// CoverTransaction 解码一个签名交易转StringRawTransaction对象
+// CoverTransaction Decode a signed transaction into a stringrawtransaction object
 func (inspecttx *InspectTx) CoverTransaction(fromprikey, dataraw string) (*StringRawTransaction, error) {
 
 	databytes, err := base64.StdEncoding.DecodeString(dataraw)

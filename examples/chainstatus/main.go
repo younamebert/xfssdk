@@ -15,7 +15,7 @@ func main() {
 	apis.SetXFSClient(cli)
 
 	apimethod := api.NewApiMethod()
-	latestBlockHeader, err := apimethod.Chain.GetHead()
+	latestBlockHeader, err := apimethod.Chain.GetBlockByNumber("11")
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)

@@ -1,29 +1,29 @@
 ## xfssdk-chainstatus
 
-这个程序演示了一个获取节点信息流程。
+this program demonstrates a process of obtaining node information.
 
-### 构建
+### Build
 
-从xfssdk/examples/chainstatus目录运行以下命令：
+From the xfssdk/examples/chainstatus directory run the following：
 
 ```go
 go build || go run
 ```
 
-### 程序使用和流程
+### application and process
 
 ```go
-// 初始化客户端
+// Initialize client
 cli := client.NewClient("https://api.scan.xfs.tech/jsonrpc/v2/", "5s")
-// 设置全局客户端请求
+// Set global client requests
 apis.SetXFSClient(cli)
 
 apimethod := api.NewApiMethod()
-//查询节点最新的blockheader信息
+// Query the latest blockheader information of the node
 latestBlockHeader, err := apimethod.Chain.GetHead()
 ```
 
-### 结果
+### result
 
 ```json
 {

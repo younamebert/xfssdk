@@ -6,10 +6,10 @@ import (
 )
 
 type HandleConfig struct {
-	Networkid       uint32 //default:1
-	Version         uint32 //default:3
-	NodeLink        string //default:https://api.scan.xfs.tech/jsonrpc/v2
-	NodeLinkOutTime string //default:5s
+	Networkid       uint32 //name:networkid default:1
+	Version         uint32 //name:version default:3
+	NodeLink        string //name:connection request address default:https://api.scan.xfs.tech/jsonrpc/v2
+	NodeLinkOutTime string //name:timeout for connection request clients default:5s
 	Logger          *LoggerConfig
 }
 
@@ -41,7 +41,7 @@ func DefaultHandleConfig() *HandleConfig {
 	return &HandleConfig{
 		Networkid:       1,
 		Version:         1,
-		NodeLink:        "https://api.scan.xfs.tech/jsonrpc/v2/", // https://api.scan.xfs.tech/jsonrpc/v2/
+		NodeLink:        "http://127.0.0.1:9012/", // https://api.scan.xfs.tech/jsonrpc/v2/
 		NodeLinkOutTime: "5s",
 		Logger:          DefaultLoggerConfig(),
 	}
@@ -68,10 +68,10 @@ func (handle *HandleConfig) SetVersion(version uint32) {
 }
 
 type LoggerConfig struct {
-	Level         string
+	Level         string //
 	Format        string
-	Prefix        string
-	Director      string
+	Prefix        string //name:Log prefix
+	Director      string //
 	ShowLine      bool
 	EncodeLevel   string
 	StacktraceKey string

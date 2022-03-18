@@ -24,7 +24,7 @@ type ChainLink interface {
 
 type ApiChain struct{}
 
-// GetBlockByNumber 根据区块高度获取区块信息
+// GetBlockByNumber obtain block information according to block height
 func (chain *ApiChain) GetBlockByNumber(number string) (*apis.BlockResp, error) {
 
 	if err := common.Str2Int64(number); err != nil {
@@ -40,7 +40,7 @@ func (chain *ApiChain) GetBlockByNumber(number string) (*apis.BlockResp, error) 
 	return result, nil
 }
 
-// GetBlockHashes 获取指定范围链区块的hash集合
+// GetBlockHashes sets the hash set of the specified scope chain blockchain
 func (chain *ApiChain) GetBlockHashes(startHeight, endHeight string) (*apis.Hashes, error) {
 
 	if err := common.Str2Int64(startHeight); err != nil {
@@ -61,7 +61,7 @@ func (chain *ApiChain) GetBlockHashes(startHeight, endHeight string) (*apis.Hash
 	return result, nil
 }
 
-// GetHead 查询最高区块的header
+// GetHead query the header of the highest block
 func (chain *ApiChain) GetHead() (*apis.BlockHeaderResp, error) {
 	result := new(apis.BlockHeaderResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.Head", nil, &result); err != nil {
@@ -70,7 +70,7 @@ func (chain *ApiChain) GetHead() (*apis.BlockHeaderResp, error) {
 	return result, nil
 }
 
-// GetBlockHeaderByNumber 指定区块链的高度查询blockheader信息
+// GetBlockHeaderByNumber specify the height of the blockchain and query blockheader information
 func (chain *ApiChain) GetBlockHeaderByNumber(number string) (*apis.BlockHeaderResp, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err
@@ -85,7 +85,7 @@ func (chain *ApiChain) GetBlockHeaderByNumber(number string) (*apis.BlockHeaderR
 	return result, nil
 }
 
-// GetBlockHeaderByHash 指定区块hash查询blockheader信息
+// GetBlockHeaderByHash specify block hash to query blockheader information
 func (chain *ApiChain) GetBlockHeaderByHash(hash string) (*apis.BlockHeaderResp, error) {
 
 	req := &GetBlockHeaderByHashArgs{
@@ -98,7 +98,7 @@ func (chain *ApiChain) GetBlockHeaderByHash(hash string) (*apis.BlockHeaderResp,
 	return result, nil
 }
 
-// GetBlockByHash 指定区块hash查询blockheader信息
+// GetBlockByHash specify block hash to query block information
 func (chain *ApiChain) GetBlockByHash(hash string) (*apis.BlockResp, error) {
 
 	req := &GetBlockByHashArgs{
@@ -111,7 +111,7 @@ func (chain *ApiChain) GetBlockByHash(hash string) (*apis.BlockResp, error) {
 	return result, nil
 }
 
-// GetTxsByBlockNum 指定区块高度获取该block所有的交易信息
+// GetTxsByBlockNum specify the block height to obtain all transaction information of the block
 func (chain *ApiChain) GetTxsByBlockNum(number string) (*apis.TransactionsResp, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (chain *ApiChain) GetTxsByBlockNum(number string) (*apis.TransactionsResp, 
 	return result, nil
 }
 
-// GetTxsByBlockHash 指定区块hash获取该高度所有的交易信息
+// GetTxsByBlockHash the specified block hash obtains all transaction information of the height
 func (chain *ApiChain) GetTxsByBlockHash(hash string) (*apis.TransactionsResp, error) {
 
 	req := &GetTxbyBlockHashArgs{
@@ -139,7 +139,7 @@ func (chain *ApiChain) GetTxsByBlockHash(hash string) (*apis.TransactionsResp, e
 	return result, nil
 }
 
-// GetReceiptByHash 指定交易txhash获取交易回执信息
+// GetReceiptByHash specify transaction txhash to obtain transaction receipt information
 func (chain *ApiChain) GetReceiptByHash(txhash string) (*apis.ReceiptResp, error) {
 
 	req := &GetReceiptByHashArgs{
@@ -152,7 +152,7 @@ func (chain *ApiChain) GetReceiptByHash(txhash string) (*apis.ReceiptResp, error
 	return result, nil
 }
 
-// GetTransaction 指定交易txhash获取交易信息
+// GetTransaction specify transaction txhash to obtain transaction information
 func (chain *ApiChain) GetTransaction(txhash string) (*apis.TransactionResp, error) {
 
 	req := &GetTransactionArgs{
@@ -165,7 +165,7 @@ func (chain *ApiChain) GetTransaction(txhash string) (*apis.TransactionResp, err
 	return result, nil
 }
 
-// GetBlockTxCountByHash 获取指定区块hash获取所有交易的数量
+// GetBlockTxCountByHash get the number of all transactions in the specified block hash
 func (chain *ApiChain) GetBlockTxCountByHash(hash string) (*int, error) {
 	req := &GetBlockTxCountByHashArgs{
 		Hash: hash,
@@ -177,7 +177,7 @@ func (chain *ApiChain) GetBlockTxCountByHash(hash string) (*int, error) {
 	return result, nil
 }
 
-// GetBlockTxCountByNum 获取指定区块height获取所有交易的数量
+// GetBlockTxCountByNum get the number of all transactions in the specified block height
 func (chain *ApiChain) GetBlockTxCountByNum(number string) (*int, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err
@@ -192,7 +192,7 @@ func (chain *ApiChain) GetBlockTxCountByNum(number string) (*int, error) {
 	return result, nil
 }
 
-// GetBlockTxByHashAndIndex 指定区块hash和指定交易集合的index查询该交易信息
+// GetBlockTxByHashAndIndex query the transaction information with the specified block hash and the index of the specified transaction set
 func (chain *ApiChain) GetBlockTxByHashAndIndex(hash string, index int) (*apis.TransactionResp, error) {
 
 	req := &GetBlockTxByHashAndIndexArgs{
@@ -206,7 +206,7 @@ func (chain *ApiChain) GetBlockTxByHashAndIndex(hash string, index int) (*apis.T
 	return result, nil
 }
 
-// GetBlockTxByNumAndIndex 指定区块height和指定交易集合的index查询该交易信息
+// GetBlockTxByNumAndIndex query the transaction information by specifying the block height and the index of the specified transaction set
 func (chain *ApiChain) GetBlockTxByNumAndIndex(number string, index int) (*apis.TransactionResp, error) {
 	if err := common.Str2Int64(number); err != nil {
 		return nil, err

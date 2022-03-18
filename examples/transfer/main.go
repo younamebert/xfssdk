@@ -17,13 +17,13 @@ func main() {
 		fromPriKey string = "0x01016ffd70850416510c648c77e7dad721f99dd1d016169f0857716981c963eaf885"
 		to         string = "nfYXkAZVjZjKnz79RyoLauuAmPBv9DPhi"
 	)
-	//私钥映射出address
+	// the private key is mapped to the account address
 	address, err := handle.Exactly.InspectTx.GetFromAddress(fromPriKey)
 	if err != nil {
 		fmt.Printf("prikey to address err:%v\n", err)
 		os.Exit(1)
 	}
-	// 获取from最新在交易池的nonce值
+	// Get the nonce value of the latest from in the trading pool
 	nonce, err := handle.ApiMethod.TxPool.GetAddrTxNonce(address.B58String())
 	if err != nil {
 		fmt.Printf("by address get txpool nonce err:%v\n", err)
@@ -38,21 +38,21 @@ func main() {
 		Nonce:    noncestr,
 		Value:    "1",
 	}
-	// handle.Exactly.InspectTx.NewRawTransaction(fromPriKey, tx)
-	//交易签名
+
+	// transaction signature
 	if err := tx.SignWithPrivateKey(fromPriKey); err != nil {
 		fmt.Printf("by address get txpool nonce err:%v\n", err)
 		os.Exit(1)
 	}
 
-	// 把交易对象结构体base64加密
+	// Encrypt the transaction object structure Base64
 	txraw, err := tx.RawTx()
 	fmt.Println(txraw)
 	if err != nil {
 		fmt.Printf("tx to base64 err:%v\n", err)
 		os.Exit(1)
 	}
-	// 发送一笔交易
+	// send a transaction
 	txhash, err := handle.ApiMethod.TxPool.SendRawTransaction(txraw)
 	if err != nil {
 		fmt.Printf("ApiMethod txpool  SendRawTransaction err:%v\n", err)

@@ -25,7 +25,6 @@ import (
 // 	Signature []byte         `json:"signature"`
 // }
 
-// StringRawTransaction 交易结构体
 type StringRawTransaction struct {
 	Version   string `json:"version"`
 	To        string `json:"to"`
@@ -37,7 +36,7 @@ type StringRawTransaction struct {
 	Nonce     string `json:"nonce"`
 }
 
-// SignWithPrivateKey 生成一个交易签名
+// SignWithPrivateKey Generate a transaction signature
 func (tx *StringRawTransaction) SignWithPrivateKey(fromprikey string) error {
 
 	keyEnc := fromprikey
@@ -66,7 +65,7 @@ func (tx *StringRawTransaction) SignWithPrivateKey(fromprikey string) error {
 	return nil
 }
 
-// RawTx 交易对象编码base64格式
+// RawTx trading partner code Base64 format
 func (tx *StringRawTransaction) RawTx() (string, error) {
 	bs, err := json.Marshal(tx)
 	if err != nil {
@@ -76,7 +75,7 @@ func (tx *StringRawTransaction) RawTx() (string, error) {
 	return result, nil
 }
 
-// signHash 生成交易hash
+// signHash generate transaction hash
 func (tx *StringRawTransaction) SignHash() common.Hash {
 	//nt := t.copyTrim()
 

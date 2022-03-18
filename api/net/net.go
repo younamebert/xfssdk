@@ -8,7 +8,7 @@ type NetLink interface {
 
 type ApiNet struct{}
 
-// GetNodeId 获取当前节点链nodeid
+// GetNodeId get nodeid of current node chain
 func (net *ApiNet) GetNodeId() (*string, error) {
 	var result *string
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Net.GetPeers", nil, &result); err != nil {

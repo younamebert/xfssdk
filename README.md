@@ -1,35 +1,35 @@
 ## xfssdk-go
 
-**xfssdk**是一个可以链接请求**xfscoin**的类库，通过某些配置，可以获取链状态，发送交易等等，库旨对开发人员友好。
+**xfssdk**It is a class library that can link to **xfscoin.**Through some configurations, you can obtain the chain status, send transactions, etc. the library is intended to be friendly to developers	
 
-### 模块概述
+### Contents
 
-- **apichain链状态模块**
-  - **txpool交易池**
-  - **state账户状态**
-  - **chain状态**
-  - **net网络状态**
-- **exactly模块**
-  - **inspecttx交易操作**
-  - **checkprikey签名验证**
+- **apichain**
+  - **txpool-blockchain trading pool**
+  - **state-account status**
+  - **chain-get blockchain status**
+  - **net-blockchain network status**
+- **exactly**
+  - **inspecttx-Transaction operation**
+  - **checkprikey-Signature verification**
 
-### 安装
+### Installation
 
-要安装 **xfssdk**包，您需要先安装 Go 并设置您的 Go 工作区。
+To install **xfssdk** package, you need to install Go and set your Go workspace first.
 
-**1. 首先需要安装[Go （需要](https://golang.org/)**1.13+ 版本**），然后你可以使用下面的 Go 命令安装 xfssdk**
+**1. First you need to install[Go （need](https://golang.org/)**1.13+ version**),then you can use the below Go command to install xfssdk**
 
 ```shell
 $ go get -u github.com/younamebert/xfssdk
 ```
 
-**2. 在您的代码中导入： **
+**2. Import it in your code:： **
 
 ```go
 import "github.com/younamebert/xfssdk"
 ```
 
-### 快速入门
+### Quick start
 
 ```go
 package main
@@ -58,23 +58,23 @@ func main() {
 
 ```
 
-### 其他
+### Other
 
-1. 支持godoc
+1. godoc
 
    ```shell
    $ godoc  -goroot=. -http=:6061
    ```
 
-### 例子
+### Example
 
-在[示例文件夹](https://github.com/younamebert/xfssdk/tree/main/examples)中，您可以找到一个发送一笔交易或者获取链状态来帮助您开始使用**xfssdk**。
+in [sample folder](https://github.com/younamebert/xfssdk/tree/main/examples)you can find a way to send a transaction or get the chain status to help you get started**xfssdk**。
 
-### 贡献
+### Contribution
 
-如果您想为 **xfssdk** 做出贡献，请分叉、修复、提交并发送拉取请求。不符合编码标准的提交将被忽略（使用 gofmt!)。如果您发送拉取请求，请绝对确保您在开发分支上提交并且您不会合并到主分支。直接基于 main 的提交会被忽略。
+If you want to contribute to **xfssdk** please fork, repair, submit and send a pull request. Submissions that do not meet the coding criteria will be ignored (using gofmt!). If you send a pull request, make sure that you submit on the development branch and that you do not merge into the main branch. Submissions based directly on main are ignored.
 
-### 执照
+### License
 
-在[MIT 许可下发布](https://github.com/go-gorm/gorm/blob/master/License),并且"按原样"提供，没有任何明示或暗示的保证。XFS 软件提供的任何安全性部分取决于它的使用、配置和部署方式。**xfssdk** 建立在许多第三方库的基础上，xfs.tech 不声明或保证 **xfssdk** 或任何第三方库将按预期执行或不会出现错误、错误或错误代码。两者都可能以或大或小的方式失败，从而完全或部分限制功能或危及计算机系统。如果您使用或实施 **xfssdk**，您将自行承担风险。在任何情况下，xfs.tech 均不对任何一方承担任何损害赔偿责任，即使已被告知存在损害的可能性。
+Issued under [MIT license]（ https://github.com/go-gorm/gorm/blob/master/License ）And provided "as is" without any express or implied warranty. Any security provided by XFS software depends in part on its use, configuration and deployment** Xfssdk * * is based on many third-party libraries, XFS Tech does not represent or warrant that **xfssdk** or any third-party library will perform as expected or will not have errors, errors or error codes. Both may fail in large or small ways, thus completely or partially limiting the function or endangering the computer system. If you use or implement **xfssdk**, you will do so at your own risk. In any case, XFS Tech shall not be liable to any party for any damages, even if it has been informed of the possibility of damage.
 

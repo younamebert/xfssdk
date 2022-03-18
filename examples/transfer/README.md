@@ -1,24 +1,24 @@
 ## xfssdk-transfer
 
-这个程序演示了一个发送交易流程。
+this program demonstrates a sending transaction process.
 
-### 构建
+### Build
 
-从xfssdk/examples/transfer目录运行以下命令：
+From the xfssdk/examples/transfer run the following：
 
 ```go
 go build || go run
 ```
 
-### 程序使用和流程
+### application and process
 
-**1. 首先创建一笔交易**
+**1. First create a transaction**
 
 ```go
 
-	// 私钥映射出address
+	// The private key is mapped to the account address
 	handle.Exactly.InspectTx.GetFromAddress(fromPriKey)
-	// 获取from最新在交易池的nonce值
+	// Get the nonce value of the latest from in the trading pool
 	handle.ApiMethod.TxPool.GetAddrTxNonce(address.B58String())
 tx := inspecttx.StringRawTransaction{
 		Version:  version,
@@ -30,22 +30,22 @@ tx := inspecttx.StringRawTransaction{
 }
 ```
 
-**2. 生成交易签名 **
+**2. generate transaction signature**
 
 ```go
-//交易签名
+// Transaction signature
 tx.SignWithPrivateKey(fromPriKey);
-//把交易对象结构体base64加密
+// Encrypt the transaction object structure Base64
 tx.RawTx()
 ```
 
-**3. 发送一笔交易**
+**3. send transaction**
 
 ```go
 handle.ApiMethod.TxPool.SendRawTransaction(txraw)
 ```
 
-### 结果
+### result
 
 ```
 0x34be6a97948c91553c964b0ff7160622a2d0d1db9083cdb0558f9a546d7ece93

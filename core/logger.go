@@ -17,7 +17,7 @@ type XFSLogger struct {
 	conf *config.LoggerConfig
 }
 
-// NewXFSLogger 初始化日志
+// NewXFSLogger Initialize
 func NewXFSLogger(conf *config.LoggerConfig) *XFSLogger {
 	return &XFSLogger{
 		conf: conf,
@@ -25,22 +25,22 @@ func NewXFSLogger(conf *config.LoggerConfig) *XFSLogger {
 }
 
 func (xfslog *XFSLogger) Zap() (logger *zap.Logger) {
-	if ok, _ := PathExists(xfslog.conf.Director); !ok { // 判断是否有Director文件夹
+	if ok, _ := PathExists(xfslog.conf.Director); !ok { // Determine whether there is a director folder
 		_ = os.Mkdir(xfslog.conf.Director, os.ModePerm)
 	}
-	// 调试级别
+	// debug level
 	debugPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
 		return lev == zap.DebugLevel
 	})
-	// 日志级别
+	// log level
 	infoPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
 		return lev == zap.InfoLevel
 	})
-	// 警告级别
+	// warning level
 	warnPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
 		return lev == zap.WarnLevel
 	})
-	// 错误级别
+	// error level
 	errorPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
 		return lev >= zap.ErrorLevel
 	})
@@ -59,7 +59,7 @@ func (xfslog *XFSLogger) Zap() (logger *zap.Logger) {
 	return logger
 }
 
-// getEncoderConfig 获取zapcore.EncoderConfig
+// getEncoderConfig get zapcore.EncoderConfig
 func (xfslog *XFSLogger) getEncoderConfig() (config zapcore.EncoderConfig) {
 	config = zapcore.EncoderConfig{
 		MessageKey:     "message",
@@ -75,13 +75,13 @@ func (xfslog *XFSLogger) getEncoderConfig() (config zapcore.EncoderConfig) {
 		EncodeCaller:   zapcore.FullCallerEncoder,
 	}
 	switch {
-	case xfslog.conf.EncodeLevel == "LowercaseLevelEncoder": // 小写编码器(默认)
+	case xfslog.conf.EncodeLevel == "LowercaseLevelEncoder": //Lower case encoder (default)
 		config.EncodeLevel = zapcore.LowercaseLevelEncoder
-	case xfslog.conf.EncodeLevel == "LowercaseColorLevelEncoder": // 小写编码器带颜色
+	case xfslog.conf.EncodeLevel == "LowercaseColorLevelEncoder": //Lowercase encoder with color
 		config.EncodeLevel = zapcore.LowercaseColorLevelEncoder
-	case xfslog.conf.EncodeLevel == "CapitalLevelEncoder": // 大写编码器
+	case xfslog.conf.EncodeLevel == "CapitalLevelEncoder": //Uppercase encoder
 		config.EncodeLevel = zapcore.CapitalLevelEncoder
-	case xfslog.conf.EncodeLevel == "CapitalColorLevelEncoder": // 大写编码器带颜色
+	case xfslog.conf.EncodeLevel == "CapitalColorLevelEncoder": //Uppercase encoder with color
 		config.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	default:
 		config.EncodeLevel = zapcore.LowercaseLevelEncoder
@@ -89,7 +89,7 @@ func (xfslog *XFSLogger) getEncoderConfig() (config zapcore.EncoderConfig) {
 	return config
 }
 
-// getEncoder 获取zapcore.Encoder
+// getEncoder get zapcore.Encoder
 func (xfslog *XFSLogger) getEncoder() zapcore.Encoder {
 	if xfslog.conf.Format == "json" {
 		return zapcore.NewJSONEncoder(xfslog.getEncoderConfig())
@@ -97,13 +97,13 @@ func (xfslog *XFSLogger) getEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(xfslog.getEncoderConfig())
 }
 
-// getEncoderCore 获取Encoder的zapcore.Core
+// getEncoderCore get Encoder->zapcore.Core
 func (xfslog *XFSLogger) getEncoderCore(fileName string, level zapcore.LevelEnabler) (core zapcore.Core) {
-	writer := GetWriteSyncer(xfslog.conf.LogInConsole, fileName) // 使用file-rotatelogs进行日志分割
+	writer := GetWriteSyncer(xfslog.conf.LogInConsole, fileName) //Log segmentation using file rotatelogs
 	return zapcore.NewCore(xfslog.getEncoder(), writer, level)
 }
 
-// 自定义日志输出时间格式
+//custom log output time format
 func (xfslog *XFSLogger) CustomTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format(xfslog.conf.Prefix + "2006/01/02 - 15:04:05.000"))
 }
@@ -114,7 +114,7 @@ func PathExists(path string) (bool, error) {
 		if fi.IsDir() {
 			return true, nil
 		}
-		return false, errors.New("存在同名文件")
+		return false, errors.New("a file with the same name already exists")
 	}
 	if os.IsNotExist(err) {
 		return false, nil
@@ -141,11 +141,11 @@ func CreateDir(dirs ...string) (err error) {
 
 func GetWriteSyncer(LogInConsole bool, file string) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   file, // 日志文件的位置
-		MaxSize:    10,   // 在进行切割之前，日志文件的最大大小（以MB为单位）
-		MaxBackups: 200,  // 保留旧文件的最大个数
-		MaxAge:     30,   // 保留旧文件的最大天数
-		Compress:   true, // 是否压缩/归档旧文件
+		Filename:   file, // Location of log files
+		MaxSize:    10,   // The maximum size (in MB) of the log file before cutting
+		MaxBackups: 200,  // Maximum number of old files retained
+		MaxAge:     30,   // Maximum number of days to keep old files
+		Compress:   true, // Compress / archive old files
 	}
 
 	if LogInConsole {

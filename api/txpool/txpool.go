@@ -15,7 +15,7 @@ type TxPoolLink interface {
 
 type ApiTxPool struct{}
 
-// GetPending 获取交易池的pending队列所有的交易信息
+// GetPending get all transaction information of the pending queue of the transaction pool
 func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
 
 	result := new(apis.TransactionsResp)
@@ -25,7 +25,7 @@ func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
 	return result, nil
 }
 
-// GetQueue 获取交易池的queue队列所有的交易信息
+// GetQueue obtain all transaction information of the queue queue of the transaction pool
 func (txpool *ApiTxPool) GetQueue() (*apis.TransactionsResp, error) {
 	result := new(apis.TransactionsResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
@@ -34,7 +34,7 @@ func (txpool *ApiTxPool) GetQueue() (*apis.TransactionsResp, error) {
 	return result, nil
 }
 
-// GetPendingSize 获取当前交易池的可以执行交易数量
+// GetPendingSize get the number of executable transactions in the current transaction pool
 func (txpool *ApiTxPool) GetPendingSize() (*int, error) {
 	var result *int
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
@@ -43,7 +43,7 @@ func (txpool *ApiTxPool) GetPendingSize() (*int, error) {
 	return result, nil
 }
 
-// GetTranByHash 指定交易txhash在交易池获取交易信息
+// GetTranByHash specify the transaction txhash to obtain transaction information in the transaction pool
 func (txpool *ApiTxPool) GetTranByHash(hash string) (*apis.TransactionResp, error) {
 	req := &GetTranByHashArgs{
 		Hash: hash,
@@ -56,6 +56,7 @@ func (txpool *ApiTxPool) GetTranByHash(hash string) (*apis.TransactionResp, erro
 	return result, nil
 }
 
+// GetAddrTxNonce specify the account address to obtain the account nonce value
 func (txpool *ApiTxPool) GetAddrTxNonce(address string) (*int64, error) {
 	req := &GetAddrNonceByHashArgs{
 		Address: address,
@@ -68,6 +69,7 @@ func (txpool *ApiTxPool) GetAddrTxNonce(address string) (*int64, error) {
 	return result, nil
 }
 
+// SendRawTransaction base64 send a transaction
 func (txpool *ApiTxPool) SendRawTransaction(data string) (*string, error) {
 	req := &RawTransactionArgs{
 		Data: data,
