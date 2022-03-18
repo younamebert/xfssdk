@@ -13,7 +13,6 @@ type TxPoolLink interface {
 	SendRawTransaction(data string) (*string, error)
 }
 
-// ApiTxPool 节点交易池状态结构体
 type ApiTxPool struct{}
 
 // GetPending 获取交易池的pending队列所有的交易信息

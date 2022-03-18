@@ -11,7 +11,6 @@ type StateLink interface {
 	GetAccountByHash(address string, roothash string) (*apis.StateObjResp, error)
 }
 
-// ApiState 账户状态结构体
 type ApiState struct{}
 
 // GetBalance 指定账户地址查看账户余额

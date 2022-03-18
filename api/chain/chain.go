@@ -22,7 +22,6 @@ type ChainLink interface {
 	GetBlockTxByNumAndIndex(number string, index int) (*apis.TransactionResp, error)
 }
 
-// ApiChain 区块链状态结构体
 type ApiChain struct{}
 
 // GetBlockByNumber 根据区块高度获取区块信息

@@ -23,7 +23,7 @@
 $ go get -u github.com/younamebert/xfssdk
 ```
 
-**2. 在您的代码中导入它： **
+**2. 在您的代码中导入： **
 
 ```go
 import "github.com/younamebert/xfssdk"
