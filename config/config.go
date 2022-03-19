@@ -6,10 +6,10 @@ import (
 )
 
 type HandleConfig struct {
-	Networkid       uint32 //name:networkid default:1
-	Version         uint32 //name:version default:3
-	NodeLink        string //name:connection request address default:https://api.scan.xfs.tech/jsonrpc/v2
-	NodeLinkOutTime string //name:timeout for connection request clients default:5s
+	Networkid       uint32 `json:"networkid" yaml:"networkid"`             //name:networkid default:1
+	Version         uint32 `json:"version" yaml:"version"`                 //name:version default:3
+	NodeLink        string `json:"nodelink" yaml:"nodelink"`               ////name:connection request address default:https://api.scan.xfs.tech/jsonrpc/v2
+	NodeLinkOutTime string `json:"nodelinkouttime" yaml:"nodelinkouttime"` //name:timeout for connection request clients default:5s
 	Logger          *LoggerConfig
 }
 
@@ -68,14 +68,14 @@ func (handle *HandleConfig) SetVersion(version uint32) {
 }
 
 type LoggerConfig struct {
-	Level         string //explain:Log level
-	Format        string //explain:Log printing
-	Prefix        string //explain:Log prefix
-	Director      string //explain:Log folder
-	ShowLine      bool   //explain:Display line
-	EncodeLevel   string //explain:Coding level
-	StacktraceKey string //explain:Stack name
-	LogInConsole  bool   //explain:Print to console
+	Level         string `json:"level" yaml:"level"`                  //explain:Log level
+	Format        string `json:"format" yaml:"format"`                //explain:Log printing
+	Prefix        string `json:"prefix" yaml:"prefix"`                //explain:Log prefix
+	Director      string `json:"director"  yaml:"director"`           //explain:Log folder
+	ShowLine      bool   `json:"showLine" yaml:"showLine"`            //explain:Display line
+	EncodeLevel   string `json:"encodeLevel" yaml:"encode-level"`     //explain:Coding level
+	StacktraceKey string `json:"stacktraceKey" yaml:"stacktrace-key"` //explain:Stack name
+	LogInConsole  bool   `json:"logInConsole" yaml:"log-in-console"`  //explain:Print to console
 }
 
 const (
