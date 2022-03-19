@@ -23,7 +23,7 @@ To install **xfssdk** package, you need to install Go and set your Go workspace 
 $ go get -u github.com/younamebert/xfssdk
 ```
 
-**2. Import it in your code:： **
+**2. Import it in your code:：**
 
 ```go
 import "github.com/younamebert/xfssdk"
