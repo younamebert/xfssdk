@@ -5,13 +5,42 @@
 ### Contents
 
 - **apichain**
-  - **txpool-blockchain trading pool**
-  - **state-account status**
-  - **chain-get blockchain status**
-  - **net-blockchain network status**
+  - **apitxpool**
+  - **apistate**
+  - **apichain**
+  - **apinet**
 - **exactly**
-  - **inspecttx-Transaction operation**
-  - **checkprikey-Signature verification**
+  - **inspecttx**
+  - **checkprikey**
+
+### Directory structure description
+
+```
+├── README.md   // help
+├── api         // chain method status
+├── common      // public Toolkit 
+├── config      // handleconfig & loggerconfig
+├── core            
+│   └── apis    // global call return of API
+│   └── logger.go
+├── exactly 
+│   └── checkprikey // private key verification
+│   └── inspecttx  // generate transaction signature and send
+├── examples
+│   └── chainstatus // examples chainstatus
+│   └── transfer    // examples transfer
+├── global
+├── libs
+│   └── ahash  // encode
+│   └── client // xfscoin client service dependency
+│   └── crypto // 256k1
+├── utils
+├── handle.go // entry service file
+├── go.mod
+├── go.sum
+```
+
+
 
 ### Installation
 
