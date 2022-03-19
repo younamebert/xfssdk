@@ -1,6 +1,6 @@
 ## xfssdk-go
 
-**xfssdk**It is a class library that can link to **xfscoin.**Through some configurations, you can obtain the chain status, send transactions, etc. the library is intended to be friendly to developers	
+**xfssdk** it is a class library that can link to **xfscoin.**Through some configurations, you can obtain the chain status, send transactions, etc. the library is intended to be friendly to developers	
 
 ### Contents
 
@@ -76,5 +76,5 @@ If you want to contribute to **xfssdk** please fork, repair, submit and send a p
 
 ### License
 
-Issued under [MIT license]（ https://github.com/go-gorm/gorm/blob/master/License ）And provided "as is" without any express or implied warranty. Any security provided by XFS software depends in part on its use, configuration and deployment** Xfssdk * * is based on many third-party libraries, XFS Tech does not represent or warrant that **xfssdk** or any third-party library will perform as expected or will not have errors, errors or error codes. Both may fail in large or small ways, thus completely or partially limiting the function or endangering the computer system. If you use or implement **xfssdk**, you will do so at your own risk. In any case, XFS Tech shall not be liable to any party for any damages, even if it has been informed of the possibility of damage.
+Issued under [MIT license]（ https://github.com/go-gorm/gorm/blob/master/License ）And provided "as is" without any express or implied warranty. Any security provided by XFS software depends in part on its use, configuration and deployment **xfssdk** is based on many third-party libraries, XFS Tech does not represent or warrant that **xfssdk** or any third-party library will perform as expected or will not have errors, errors or error codes. Both may fail in large or small ways, thus completely or partially limiting the function or endangering the computer system. If you use or implement **xfssdk**, you will do so at your own risk. In any case, XFS Tech shall not be liable to any party for any damages, even if it has been informed of the possibility of damage.
 
