@@ -1,6 +1,6 @@
 ## xfssdk-go
 
-**xfssdk** it is a class library that can link to **xfscoin.**Through some configurations, you can obtain the chain status, send transactions, etc. the library is intended to be friendly to developers	
+**xfssdk** it is a class library that can link to xfscoin. hrough some configurations, you can obtain the chain status, send transactions, etc. the library is intended to be friendly to developers	
 
 ### Contents
 
@@ -23,7 +23,7 @@ To install **xfssdk** package, you need to install Go and set your Go workspace 
 $ go get -u github.com/younamebert/xfssdk
 ```
 
-**2. Import it in your code:：**
+**2. Import it in your code:**
 
 ```go
 import "github.com/younamebert/xfssdk"
