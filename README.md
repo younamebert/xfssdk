@@ -5,13 +5,19 @@
 ### Contents
 
 - **apichain**
-  - **apitxpool**
-  - **apistate**
-  - **apichain**
-  - **apinet**
+  | module    | explain                                         |
+  | :-------- | ----------------------------------------------- |
+  | apitxpool | get blockchain transaction pool status          |
+  | apistate  | obtain account status information on blockchain |
+  | apichain  | get the information of node block               |
+  | apinet    | get the information of blockchain nodes         |
+  
 - **exactly**
-  - **inspecttx**
-  - **checkprikey**
+  
+  | module      | explain                                         |
+  | ----------- | ----------------------------------------------- |
+  | inspecttx   | create send transaction to node chain operation |
+  | checkprikey | private key validation set                      |
 
 ### Directory structure description
 
