@@ -6,10 +6,10 @@ import (
 )
 
 type HandleConfig struct {
-	Networkid       uint32 `json:"networkid" yaml:"networkid"`             //name:networkid default:1
-	Version         uint32 `json:"version" yaml:"version"`                 //name:version default:3
-	NodeLink        string `json:"nodelink" yaml:"nodelink"`               ////name:connection request address default:https://api.scan.xfs.tech/jsonrpc/v2
-	NodeLinkOutTime string `json:"nodelinkouttime" yaml:"nodelinkouttime"` //name:timeout for connection request clients default:5s
+	Networkid       uint32 `json:"networkid" yaml:"networkid"`             //explain:networkid default:1
+	Version         uint32 `json:"version" yaml:"version"`                 //explain:version default:3
+	NodeLink        string `json:"nodelink" yaml:"nodelink"`               //explain:connection request address default:https://api.scan.xfs.tech/jsonrpc/v2
+	NodeLinkOutTime string `json:"nodelinkouttime" yaml:"nodelinkouttime"` //explain:timeout for connection request clients default:5s
 	Logger          *LoggerConfig
 }
 
