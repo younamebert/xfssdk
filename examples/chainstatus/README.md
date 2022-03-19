@@ -10,7 +10,7 @@ From the xfssdk/examples/chainstatus directory run the following：
 go build || go run
 ```
 
-### application and process
+### Contents
 
 ```go
 // Initialize client

@@ -68,14 +68,14 @@ func (handle *HandleConfig) SetVersion(version uint32) {
 }
 
 type LoggerConfig struct {
-	Level         string //
-	Format        string
-	Prefix        string //name:Log prefix
-	Director      string //
-	ShowLine      bool
-	EncodeLevel   string
-	StacktraceKey string
-	LogInConsole  bool
+	Level         string //explain:Log level
+	Format        string //explain:Log printing
+	Prefix        string //explain:Log prefix
+	Director      string //explain:Log folder
+	ShowLine      bool   //explain:Display line
+	EncodeLevel   string //explain:Coding level
+	StacktraceKey string //explain:Stack name
+	LogInConsole  bool   //explain:Print to console
 }
 
 const (

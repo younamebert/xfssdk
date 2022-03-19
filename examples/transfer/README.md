@@ -10,7 +10,7 @@ From the xfssdk/examples/transfer run the following：
 go build || go run
 ```
 
-### application and process
+### Contents
 
 **1. First create a transaction**
 
