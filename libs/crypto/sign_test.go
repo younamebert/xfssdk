@@ -3,8 +3,9 @@ package crypto
 import (
 	"encoding/hex"
 	"testing"
-	"xfsgo/common"
-	"xfsgo/common/ahash"
+
+	"github.com/younamebert/xfssdk/common"
+	"github.com/younamebert/xfssdk/common/ahash"
 )
 
 func TestECDSASign(t *testing.T) {
