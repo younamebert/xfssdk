@@ -36,7 +36,7 @@ tx := inspecttx.StringRawTransaction{
 // Transaction signature
 tx.SignWithPrivateKey(fromPriKey);
 // Encrypt the transaction object structure Base64
-tx.RawTx()
+tx.Transfer2Raw()
 ```
 
 **3. send transaction**

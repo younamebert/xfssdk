@@ -1,6 +1,9 @@
 package xfssdk
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/younamebert/xfssdk/api"
 	"github.com/younamebert/xfssdk/config"
 	"github.com/younamebert/xfssdk/core"
@@ -20,7 +23,6 @@ type Handle struct {
 func Default() *Handle {
 	handle := &Handle{
 		Config:    config.DefaultHandleConfig(),
-		Exactly:   exactly.NewExactly(),
 		ApiMethod: api.NewApiMethod(),
 	}
 	cli := client.NewClient(handle.Config.NodeLink, handle.Config.NodeLinkOutTime)
@@ -29,6 +31,12 @@ func Default() *Handle {
 	XFSLogger := core.NewXFSLogger(config.DefaultLoggerConfig())
 	logc := XFSLogger.Zap()
 	global.Set_GVA_LOG(logc)
+	// Initialize the ABI object
+	if err := apis.XFSABI(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+		return nil
+	}
 
 	return handle
 }
@@ -43,8 +51,13 @@ func New(handleconf *config.HandleConfig, loggerconf *config.LoggerConfig) *Hand
 	XFSLogger := core.NewXFSLogger(handle.Config.Logger)
 	logc := XFSLogger.Zap()
 	global.Set_GVA_LOG(logc)
+	// Initialize the ABI object
+	if err := apis.XFSABI(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+		return nil
+	}
 
 	handle.ApiMethod = api.NewApiMethod()
-	handle.Exactly = exactly.NewExactly()
 	return handle
 }

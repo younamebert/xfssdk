@@ -1,29 +1,15 @@
-package inspecttx
+package servetxpool
 
 import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"sort"
 
 	"github.com/younamebert/xfssdk/common"
 	"github.com/younamebert/xfssdk/libs/ahash"
 	"github.com/younamebert/xfssdk/libs/crypto"
 )
-
-// type Transaction struct {
-// 	Version   uint32         `json:"version"`
-// 	From      common.Address `json:"from"`
-// 	To        common.Address `json:"to"`
-// 	GasPrice  *big.Int       `json:"gas_price"`
-// 	GasLimit  *big.Int       `json:"gas_limit"`
-// 	Data      []byte         `json:"data"`
-// 	Nonce     uint64         `json:"nonce"`
-// 	Value     *big.Int       `json:"value"`
-// 	Signature []byte         `json:"signature"`
-// }
 
 type StringRawTransaction struct {
 	Version   string `json:"version"`
@@ -65,8 +51,8 @@ func (tx *StringRawTransaction) SignWithPrivateKey(fromprikey string) error {
 	return nil
 }
 
-// RawTx trading partner code Base64 format
-func (tx *StringRawTransaction) RawTx() (string, error) {
+// Transfer2Raw trading partner code Base64 format
+func (tx *StringRawTransaction) Transfer2Raw() (string, error) {
 	bs, err := json.Marshal(tx)
 	if err != nil {
 		return "", err
@@ -88,29 +74,9 @@ func (tx *StringRawTransaction) SignHash() common.Hash {
 		"nonce":     tx.Nonce,
 		"value":     tx.Value,
 	}
-	enc := sortAndEncodeMap(tmp)
+	enc := common.SortAndEncodeMap(tmp)
 	if enc == "" {
 		return common.Hash{}
 	}
 	return common.Bytes2Hash(ahash.SHA256([]byte(enc)))
-}
-
-func sortAndEncodeMap(data map[string]string) string {
-	mapkeys := make([]string, 0)
-	for k := range data {
-		mapkeys = append(mapkeys, k)
-	}
-	sort.Strings(mapkeys)
-	strbuf := ""
-	for i, key := range mapkeys {
-		val := data[key]
-		if val == "" {
-			continue
-		}
-		strbuf += fmt.Sprintf("%s=%s", key, val)
-		if i < len(mapkeys)-1 {
-			strbuf += "&"
-		}
-	}
-	return strbuf
 }

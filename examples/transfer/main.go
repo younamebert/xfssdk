@@ -46,7 +46,7 @@ func main() {
 	}
 
 	// Encrypt the transaction object structure Base64
-	txraw, err := tx.RawTx()
+	txraw, err := tx.Transfer2Raw()
 	fmt.Println(txraw)
 	if err != nil {
 		fmt.Printf("tx to base64 err:%v\n", err)

@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	cli := client.NewClient("https://api.scan.xfs.tech/jsonrpc/v2/", "5s")
+	cli := client.NewClient("http://192.168.2.13:9012/", "5s")
 	apis.SetXFSClient(cli)
 
 	apimethod := api.NewApiMethod()
