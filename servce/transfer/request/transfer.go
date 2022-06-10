@@ -1,4 +1,4 @@
-package servetxpool
+package reqtransfer
 
 import (
 	"encoding/base64"
@@ -7,9 +7,13 @@ import (
 	"errors"
 
 	"github.com/younamebert/xfssdk/common"
-	"github.com/younamebert/xfssdk/libs/ahash"
-	"github.com/younamebert/xfssdk/libs/crypto"
+	"github.com/younamebert/xfssdk/common/ahash"
+	"github.com/younamebert/xfssdk/crypto"
 )
+
+type RawTransactionArgs struct {
+	Data string `json:"data"`
+}
 
 type StringRawTransaction struct {
 	Version   string `json:"version"`

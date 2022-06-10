@@ -1,4 +1,4 @@
-package apichain
+package reqchain
 
 type GetBlockByNumArgs struct {
 	Number string `json:"number"`

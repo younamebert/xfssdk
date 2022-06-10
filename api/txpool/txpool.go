@@ -2,13 +2,16 @@ package apitxpool
 
 import (
 	"github.com/younamebert/xfssdk/core/apis"
+	reqtransfer "github.com/younamebert/xfssdk/servce/transfer/request"
+	resptransfer "github.com/younamebert/xfssdk/servce/transfer/response"
+	reqtxpool "github.com/younamebert/xfssdk/servce/txpool/request"
 )
 
 type TxPoolLink interface {
-	GetPending() (*apis.TransactionsResp, error)
-	GetQueue() (*apis.TransactionsResp, error)
+	GetPending() (*resptransfer.TransactionsResp, error)
+	GetQueue() (*resptransfer.TransactionsResp, error)
 	GetPendingSize() (*int, error)
-	GetTranByHash(hash string) (*apis.TransactionResp, error)
+	GetTranByHash(hash string) (*resptransfer.TransactionResp, error)
 	GetAddrTxNonce(address string) (*int64, error)
 	SendRawTransaction(data string) (*string, error)
 }
@@ -16,9 +19,9 @@ type TxPoolLink interface {
 type ApiTxPool struct{}
 
 // GetPending get all transaction information of the pending queue of the transaction pool
-func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
+func (txpool *ApiTxPool) GetPending() (*resptransfer.TransactionsResp, error) {
 
-	result := new(apis.TransactionsResp)
+	result := new(resptransfer.TransactionsResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetPending", nil, &result); err != nil {
 		return nil, err
 	}
@@ -26,8 +29,8 @@ func (txpool *ApiTxPool) GetPending() (*apis.TransactionsResp, error) {
 }
 
 // GetQueue obtain all transaction information of the queue queue of the transaction pool
-func (txpool *ApiTxPool) GetQueue() (*apis.TransactionsResp, error) {
-	result := new(apis.TransactionsResp)
+func (txpool *ApiTxPool) GetQueue() (*resptransfer.TransactionsResp, error) {
+	result := new(resptransfer.TransactionsResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetQueue", nil, &result); err != nil {
 		return nil, err
 	}
@@ -44,12 +47,12 @@ func (txpool *ApiTxPool) GetPendingSize() (*int, error) {
 }
 
 // GetTranByHash specify the transaction txhash to obtain transaction information in the transaction pool
-func (txpool *ApiTxPool) GetTranByHash(hash string) (*apis.TransactionResp, error) {
-	req := &GetTranByHashArgs{
+func (txpool *ApiTxPool) GetTranByHash(hash string) (*resptransfer.TransactionResp, error) {
+	req := &reqtxpool.GetTranByHashArgs{
 		Hash: hash,
 	}
 
-	result := new(apis.TransactionResp)
+	result := new(resptransfer.TransactionResp)
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetTranByHash", &req, &result); err != nil {
 		return nil, err
 	}
@@ -58,7 +61,7 @@ func (txpool *ApiTxPool) GetTranByHash(hash string) (*apis.TransactionResp, erro
 
 // GetAddrTxNonce specify the account address to obtain the account nonce value
 func (txpool *ApiTxPool) GetAddrTxNonce(address string) (*int64, error) {
-	req := &GetAddrNonceByHashArgs{
+	req := &reqtxpool.GetAddrNonceByHashArgs{
 		Address: address,
 	}
 	var result *int64
@@ -71,7 +74,7 @@ func (txpool *ApiTxPool) GetAddrTxNonce(address string) (*int64, error) {
 
 // SendRawTransaction base64 send a transaction
 func (txpool *ApiTxPool) SendRawTransaction(data string) (*string, error) {
-	req := &RawTransactionArgs{
+	req := &reqtransfer.RawTransactionArgs{
 		Data: data,
 	}
 	var result *string

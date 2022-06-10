@@ -1,4 +1,4 @@
-package apistate
+package reqstate
 
 type GetAccountArgs struct {
 	RootHash string `json:"root_hash"`

@@ -9,8 +9,8 @@ import (
 	"math/big"
 
 	"github.com/younamebert/xfssdk/common"
-	"github.com/younamebert/xfssdk/libs/ahash"
-	"github.com/younamebert/xfssdk/libs/crypto/secp256k1"
+	"github.com/younamebert/xfssdk/common/ahash"
+	"github.com/younamebert/xfssdk/crypto/secp256k1"
 )
 
 const defaultKeyPackType = uint8(1)

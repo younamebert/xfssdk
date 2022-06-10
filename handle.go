@@ -8,14 +8,12 @@ import (
 	"github.com/younamebert/xfssdk/config"
 	"github.com/younamebert/xfssdk/core"
 	"github.com/younamebert/xfssdk/core/apis"
-	"github.com/younamebert/xfssdk/exactly"
 	"github.com/younamebert/xfssdk/global"
 	"github.com/younamebert/xfssdk/libs/client"
 )
 
 type Handle struct {
 	Config    *config.HandleConfig
-	Exactly   *exactly.Exactly
 	ApiMethod *api.ApiMethod
 }
 

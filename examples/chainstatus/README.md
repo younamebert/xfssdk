@@ -14,7 +14,7 @@ go build || go run
 
 ```go
 // Initialize client
-cli := client.NewClient("http://192.168.2.13:9012/", "5s")
+cli := client.NewClient("http://192.168.2.13:9014/", "5s")
 // Set global client requests
 apis.SetXFSClient(cli)
 

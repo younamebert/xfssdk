@@ -39,6 +39,19 @@ func Hex2bytes(s string) []byte {
 	return nil
 }
 
+func HexToBytes(s string) ([]byte, error) {
+	if len(s) > 1 {
+		if s[0:2] == "0x" {
+			s = s[2:]
+		}
+		if len(s)%2 == 1 {
+			s = "0" + s
+		}
+		return hex.DecodeString(s)
+	}
+	return hex.DecodeString(s)
+}
+
 func Bytes2Hash(b []byte) Hash {
 	var h Hash
 	h.SetBytes(b)
