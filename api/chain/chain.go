@@ -19,6 +19,7 @@ type ChainLink interface {
 	GetTxsByBlockHash(hash string) (*resptransfer.TransactionsResp, error)
 	GetReceiptByHash(txhash string) (*resptransfer.ReceiptResp, error)
 	GetTransaction(txhash string) (*resptransfer.TransactionResp, error)
+	GetChainTransfer(txhash string) bool
 	GetBlockTxCountByHash(hash string) (*int, error)
 	GetBlockTxCountByNum(number string) (*int, error)
 	GetBlockTxByHashAndIndex(hash string, index int) (*resptransfer.TransactionResp, error)
@@ -166,6 +167,20 @@ func (chain *ApiChain) GetTransaction(txhash string) (*resptransfer.TransactionR
 		return nil, err
 	}
 	return result, nil
+}
+
+func (chain *ApiChain) GetChainTransfer(txhash string) bool {
+	req := &reqchain.GetTransactionArgs{
+		Hash: txhash,
+	}
+	result := new(resptransfer.TransactionResp)
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "Chain.GetTransaction", &req, &result); err != nil {
+		return false
+	}
+	if result != nil {
+		return true
+	}
+	return false
 }
 
 // GetBlockTxCountByHash get the number of all transactions in the specified block hash

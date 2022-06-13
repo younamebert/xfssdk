@@ -1,9 +1,11 @@
-package abi
+package stdtoken
 
 import (
 	"encoding/binary"
 	"errors"
 	"io"
+
+	"github.com/younamebert/xfssdk/core/abi"
 )
 
 const smallBufferSize = 64
@@ -13,11 +15,11 @@ var ErrTooLarge = errors.New("bytes.Buffer: too large")
 const maxInt = int(^uint(0) >> 1)
 
 type Buffer interface {
-	ReadUint8() (CTypeUint8, error)
-	ReadUint16() (CTypeUint16, error)
-	ReadUint32() (CTypeUint32, error)
-	ReadString(size int) (CTypeString, error)
-	ReadUint256() (CTypeUint256, error)
+	ReadUint8() (abi.CTypeUint8, error)
+	ReadUint16() (abi.CTypeUint16, error)
+	ReadUint32() (abi.CTypeUint32, error)
+	ReadString(size int) (abi.CTypeString, error)
+	ReadUint256() (abi.CTypeUint256, error)
 	Write(p []byte) (n int, err error)
 	Bytes() []byte
 }
@@ -145,16 +147,16 @@ func (b *buffer) ReadRows(size int) ([]row, int, error) {
 	return buf, mod, nil
 }
 
-func (b *buffer) ReadUint8() (n CTypeUint8, e error) {
+func (b *buffer) ReadUint8() (n abi.CTypeUint8, e error) {
 	var r row
 	r, e = b.ReadRow()
 	if e != nil {
 		return
 	}
-	return CTypeUint8{r[0]}, nil
+	return abi.CTypeUint8{r[0]}, nil
 }
 
-func (b *buffer) ReadUint16() (n CTypeUint16, e error) {
+func (b *buffer) ReadUint16() (n abi.CTypeUint16, e error) {
 	var r row
 	r, e = b.ReadRow()
 	if e != nil {
@@ -164,7 +166,7 @@ func (b *buffer) ReadUint16() (n CTypeUint16, e error) {
 	return
 }
 
-func (b *buffer) ReadUint32() (n CTypeUint32, e error) {
+func (b *buffer) ReadUint32() (n abi.CTypeUint32, e error) {
 	var r row
 	r, e = b.ReadRow()
 	if e != nil {
@@ -173,7 +175,7 @@ func (b *buffer) ReadUint32() (n CTypeUint32, e error) {
 	copy(n[:], r[:4])
 	return
 }
-func (b *buffer) ReadUint256() (n CTypeUint256, e error) {
+func (b *buffer) ReadUint256() (n abi.CTypeUint256, e error) {
 	var r []row
 	var m int
 	r, m, e = b.ReadRows(len(n))
@@ -214,7 +216,7 @@ func (b *buffer) Read(n []byte) (e error) {
 	copy(n[:], buf[:m])
 	return
 }
-func (b *buffer) ReadString(size int) (n CTypeString, e error) {
+func (b *buffer) ReadString(size int) (n abi.CTypeString, e error) {
 	var r []row
 	var m int
 	r, m, e = b.ReadRows(size)

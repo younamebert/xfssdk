@@ -2,9 +2,9 @@ package api
 
 import (
 	apichain "github.com/younamebert/xfssdk/api/chain"
-	apicontract "github.com/younamebert/xfssdk/api/contract"
 	apinet "github.com/younamebert/xfssdk/api/net"
 	apistate "github.com/younamebert/xfssdk/api/state"
+	apitransfer "github.com/younamebert/xfssdk/api/transfer"
 	apitxpool "github.com/younamebert/xfssdk/api/txpool"
 )
 
@@ -14,8 +14,7 @@ type ApiMethod struct {
 	Net         apinet.NetLink
 	State       apistate.StateLink
 	TxPool      apitxpool.TxPoolLink
-	BasicsToken apicontract.BasicsTokenLink
-	StdToken    apichain.ChainLink
+	ApiTransfer apitransfer.TransferLink
 }
 
 func NewApiMethod() *ApiMethod {
@@ -24,6 +23,6 @@ func NewApiMethod() *ApiMethod {
 		Net:         new(apinet.ApiNet),
 		State:       new(apistate.ApiState),
 		TxPool:      new(apitxpool.ApiTxPool),
-		BasicsToken: new(apicontract.ApiBasicsToken),
+		ApiTransfer: new(apitransfer.ApiTransfer),
 	}
 }

@@ -1,36 +1,40 @@
 package apitransfer
 
-// type TransferLink interface {
-// 	EnCodeRawTransaction(fromprikey string, tx *servetxpool.StringRawTransaction) (*servetxpool.StringRawTransaction, error)
-// 	DeCodeRawTransaction(dataraw string) (*servetxpool.StringRawTransaction, error)
-// }
+import (
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
 
-// type ApiTransfer struct{}
+	reqtransfer "github.com/younamebert/xfssdk/servce/transfer/request"
+)
 
-// // EnCodeRawTransaction Create a signed transaction
-// func (transfer *ApiTransfer) EnCodeRawTransaction(fromprikey string, tx *servetxpool.StringRawTransaction) (string, error) {
+type TransferLink interface {
+	EnCodeRawTransaction(fromprikey string, tx *reqtransfer.StringRawTransaction) (string, error)
+	DeCodeRawTransaction(dataraw string) (*reqtransfer.StringRawTransaction, error)
+}
 
-// 	if err := tx.SignWithPrivateKey(fromprikey); err != nil {
-// 		return "", err
-// 	}
-// 	return tx.Transfer2Raw()
-// }
+type ApiTransfer struct{}
 
-// // DeCodeRawTransaction Decode a signed transaction into a stringrawtransaction object
-// func (transfer *ApiTransfer) DeCodeRawTransaction(dataraw string) (*servetxpool.StringRawTransaction, error) {
+// EnCodeRawTransaction Create a signed transaction
+func (transfer *ApiTransfer) EnCodeRawTransaction(fromprikey string, tx *reqtransfer.StringRawTransaction) (string, error) {
 
-// 	databytes, err := base64.StdEncoding.DecodeString(dataraw)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	if err := tx.SignWithPrivateKey(fromprikey); err != nil {
+		return "", err
+	}
+	return tx.Transfer2Raw()
+}
 
-// 	rawtx := &servetxpool.StringRawTransaction{}
-// 	if err := json.Unmarshal(databytes, rawtx); err != nil {
-// 		return nil, fmt.Errorf("failed to parse data: %s", err)
-// 	}
+// DeCodeRawTransaction Decode a signed transaction into a stringrawtransaction object
+func (transfer *ApiTransfer) DeCodeRawTransaction(dataraw string) (*reqtransfer.StringRawTransaction, error) {
 
-// 	// if err := rawtx.SignWithPrivateKey(fromprikey); err != nil {
-// 	// 	return nil, err
-// 	// }
-// 	return rawtx, nil
-// }
+	databytes, err := base64.StdEncoding.DecodeString(dataraw)
+	if err != nil {
+		return nil, err
+	}
+
+	rawtx := &reqtransfer.StringRawTransaction{}
+	if err := json.Unmarshal(databytes, rawtx); err != nil {
+		return nil, fmt.Errorf("failed to parse data: %s", err)
+	}
+	return rawtx, nil
+}

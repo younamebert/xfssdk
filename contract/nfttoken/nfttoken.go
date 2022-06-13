@@ -1,4 +1,4 @@
-package stdtoken
+package nfttoken
 
 import (
 	"fmt"
@@ -18,29 +18,17 @@ import (
 	reqtransfer "github.com/younamebert/xfssdk/servce/transfer/request"
 )
 
-type StdTokenLocal struct{}
+type NFTTokenLocal struct{}
 
-func (stdtokenlocad *StdTokenLocal) Create(args reqcontract.TokenArgs) (string, error) {
-
-	decimal, ok := new(big.Int).SetString(args.Decimals, 10)
-	if !ok {
-		return "", fmt.Errorf("invalid decimals type string to big.Int error val:%v", args.Decimals)
-	}
-
-	totalSupply, ok := new(big.Int).SetString(args.TotalSupply, 10)
-	if !ok {
-		return "", fmt.Errorf("invalid totalSupply type string to big.Int error val:%v", args.TotalSupply)
-	}
-
-	code, err := apis.GVA_ABI_STDTOKEN.Create(abi.CTypeString(args.Name), abi.CTypeString(args.Symbol), abi.NewUint8(uint8(decimal.Uint64())), abi.NewUint256(totalSupply))
+func (nftokenlocad *NFTTokenLocal) NFTCreate(args reqcontract.NFTTokenCreateArgs) (string, error) {
+	code, err := apis.GVA_ABI_NFTTOKEN.Create(abi.CTypeString(args.Name), abi.CTypeString(args.Symbol))
 	if err != nil {
-		return "", fmt.Errorf("an exception occurred of contract argument")
+		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
-
-	return code, err
+	return code, nil
 }
 
-func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs) (*stdtoken, string, error) {
+func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployTokenArgs) (*nfttoken, string, error) {
 	//创建合约交易
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	tokenTransfer.Data = args.Code
@@ -76,34 +64,33 @@ func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs
 	caddr := crypto.CreateAddress(fromAddressHash, nonce)
 
 	//返回交易哈希和合约地址
-	result := &stdtoken{
+	result := &nfttoken{
 		ContractAddress:      caddr.B58String(), //合约地址
 		CreatorAddressPrikey: args.Addresskey,   //创建人私钥
 	}
 	return result, txhash, nil
 }
 
-type StdTokenCall interface {
-	Address() common.Address
+type NFTTokenCall interface {
 	Name() (string, error)
 	Symbol() (string, error)
-	GetDecimals() (*big.Int, error)
-	GetTotalSupply() (*big.Int, error)
-	BalanceOf(account_address string) (*big.Int, error)
-	Allowance(args reqcontract.StdTokenAllowanceArgs) (*big.Int, error)
-	Mint(args reqcontract.StdTokenMintArgs) (string, error)
-	Burn(args reqcontract.StdTokenBurnArgs) (string, error)
-	Approve(args reqcontract.StdTokenApproveArgs) (string, error)
-	TransferFrom(args reqcontract.StdTokenTransferFromArgs) (string, error)
+	BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, error)
+	OwnerOf(args reqcontract.OwnerOfArgs) (string, error)
+	IsApproveForAll(args reqcontract.ISApproveForAllArgs) (string, error)
+	GetApproved(args reqcontract.GetApprovedArgs) (string, error)
+	Mint(args reqcontract.MintArgs) (string, error)
+	Approve(args reqcontract.ApproveArgs) (string, error)
+	SetApprovalForAll(args reqcontract.SetApproveForAllArgs) (string, error)
+	TransferFrom(args reqcontract.TransferFromArgs) (string, error)
 }
 
-type stdtoken struct {
+type nfttoken struct {
 	ContractAddress      string //合约地址
 	CreatorAddressPrikey string //创建人私钥
 }
 
-func (stdtoken *stdtoken) Address() common.Address {
-	address, err := libs.StrKey2Address(stdtoken.CreatorAddressPrikey)
+func (nfttoken *nfttoken) Address() common.Address {
+	address, err := libs.StrKey2Address(nfttoken.CreatorAddressPrikey)
 	if err != nil {
 		fmt.Printf("StrKey2Address :%v\n", err)
 		os.Exit(1)
@@ -112,14 +99,14 @@ func (stdtoken *stdtoken) Address() common.Address {
 }
 
 //获取合约名称合约
-func (stdtoken *stdtoken) Name() (string, error) {
+func (nfttoken *nfttoken) Name() (string, error) {
 
-	packed, err := apis.GVA_ABI_STDTOKEN.Name()
+	packed, err := apis.GVA_ABI_NFTTOKEN.Name()
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
 	req := contract.VMCallData{
-		To:   stdtoken.ContractAddress,
+		To:   nfttoken.ContractAddress,
 		Data: packed,
 	}
 	var result string
@@ -134,14 +121,92 @@ func (stdtoken *stdtoken) Name() (string, error) {
 	return tokenname, nil
 }
 
-func (stdtoken *stdtoken) Symbol() (string, error) {
+func (nfttoken *nfttoken) Symbol() (string, error) {
 
-	packed, err := apis.GVA_ABI_STDTOKEN.Symbol()
+	packed, err := apis.GVA_ABI_NFTTOKEN.Symbol()
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
 	req := contract.VMCallData{
-		To:   stdtoken.ContractAddress,
+		To:   nfttoken.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
+	byteResult, err := common.HexToBytes(result)
+	if err != nil {
+		return "", err
+	}
+	tokenname := string(byteResult)
+	return tokenname, nil
+}
+
+func (nfttoken *nfttoken) BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, error) {
+	packed, err := apis.GVA_ABI_NFTTOKEN.BalanceOf(args.BalanceOfAddress)
+	if err != nil {
+		return nil, fmt.Errorf("no connection established in service err:%v", err)
+	}
+	req := contract.VMCallData{
+		To:   nfttoken.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return nil, err
+	}
+	byteResult, err := common.HexToBytes(result)
+	if err != nil {
+		return big.NewInt(0), err
+	}
+	bigResult := big.NewInt(0).SetBytes(byteResult)
+
+	return bigResult, nil
+}
+
+func (nfttoken *nfttoken) OwnerOf(args reqcontract.OwnerOfArgs) (string, error) {
+
+	tokenid, ok := new(big.Int).SetString(args.TokenId, 10)
+	if !ok {
+		return "", fmt.Errorf("invalid TokenId on the %v", args.TokenId)
+	}
+
+	packed, err := apis.GVA_ABI_NFTTOKEN.OwnerOf(abi.NewUint256(tokenid))
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	req := contract.VMCallData{
+		To:   nfttoken.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
+
+	byteData, err := common.HexToBytes(result)
+	if err != nil {
+		return "", err
+	}
+
+	addr := common.Bytes2Address(byteData)
+
+	return addr.B58String(), nil
+}
+
+func (nfttoken *nfttoken) IsApproveForAll(args reqcontract.ISApproveForAllArgs) (string, error) {
+
+	ownerAddr := common.StrB58ToAddress(args.OwnerAddress)
+	spenderAddr := common.StrB58ToAddress(args.SpenderAddress)
+
+	packed, err := apis.GVA_ABI_NFTTOKEN.IsApproveForAll(abi.NewAddress(ownerAddr), abi.NewAddress(spenderAddr))
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+
+	req := contract.VMCallData{
+		To:   nfttoken.ContractAddress,
 		Data: packed,
 	}
 
@@ -149,135 +214,56 @@ func (stdtoken *stdtoken) Symbol() (string, error) {
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
 		return "", err
 	}
+
 	byteResult, err := common.HexToBytes(result)
 	if err != nil {
 		return "", err
 	}
 	strData := string(byteResult)
+
 	return strData, nil
 }
 
-func (stdtoken *stdtoken) GetDecimals() (*big.Int, error) {
+func (nfttoken *nfttoken) GetApproved(args reqcontract.GetApprovedArgs) (string, error) {
 
-	packed, err := apis.GVA_ABI_STDTOKEN.GetDecimals()
-	if err != nil {
-		return nil, fmt.Errorf("no connection established in service err:%v", err)
+	tokenid, ok := new(big.Int).SetString(args.TokenId, 10)
+	if !ok {
+		return "", fmt.Errorf("invalid tokenId on the error")
 	}
+
+	packed, err := apis.GVA_ABI_NFTTOKEN.GetApproved(abi.NewUint256(tokenid))
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+
 	req := contract.VMCallData{
-		To:   stdtoken.ContractAddress,
+		To:   nfttoken.ContractAddress,
 		Data: packed,
 	}
 
 	var result string
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
-		return nil, err
+		return "", err
 	}
-	byteResult, err := common.HexToBytes(result)
+
+	byteData, err := common.HexToBytes(result)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	byteResult, err = common.HexToBytes(result)
-	if err != nil {
-		return big.NewInt(0), err
-	}
-	bigResult := big.NewInt(0).SetBytes(byteResult)
-	return bigResult, nil
+
+	addr := common.Bytes2Address(byteData)
+
+	return addr.B58String(), nil
 }
 
-func (stdtoken *stdtoken) GetTotalSupply() (*big.Int, error) {
-
-	packed, err := apis.GVA_ABI_STDTOKEN.GetTotalSupply()
-	if err != nil {
-		return nil, fmt.Errorf("no connection established in service err:%v", err)
-	}
-	req := contract.VMCallData{
-		To:   stdtoken.ContractAddress,
-		Data: packed,
-	}
-
-	var result string
-	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
-		return nil, err
-	}
-	byteResult, err := common.HexToBytes(result)
-	if err != nil {
-		return big.NewInt(0), err
-	}
-	bigResult := big.NewInt(0).SetBytes(byteResult)
-	return bigResult, nil
-}
-
-func (stdtoken *stdtoken) BalanceOf(account_address string) (*big.Int, error) {
-
-	accoutAddr := common.StrB58ToAddress(account_address)
-
-	cTypeAddr := abi.NewAddress(accoutAddr)
-	packed, err := apis.GVA_ABI_STDTOKEN.BalanceOf(cTypeAddr)
-	if err != nil {
-		return nil, fmt.Errorf("no connection established in service err:%v", err)
-	}
-
-	req := contract.VMCallData{
-		To:   stdtoken.ContractAddress,
-		Data: packed,
-	}
-
-	var result string
-	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
-		return nil, err
-	}
-	byteResult, err := common.HexToBytes(result)
-	if err != nil {
-		return big.NewInt(0), err
-	}
-	bigResult := big.NewInt(0).SetBytes(byteResult)
-	return bigResult, nil
-}
-
-func (stdtoken *stdtoken) Allowance(args reqcontract.StdTokenAllowanceArgs) (*big.Int, error) {
-
-	ownerAddr := common.StrB58ToAddress(args.OwnerAddress)
-	cTypeOwnerAddr := abi.NewAddress(ownerAddr)
-
-	addr := common.StrB58ToAddress(args.SpenderAddress)
-	cTypeAddr := abi.NewAddress(addr)
-
-	packed, err := apis.GVA_ABI_STDTOKEN.Allowance(cTypeOwnerAddr, cTypeAddr)
-	if err != nil {
-		return nil, fmt.Errorf("no connection established in service err:%v", err)
-	}
-
-	req := contract.VMCallData{
-		To:   stdtoken.ContractAddress,
-		Data: packed,
-	}
-
-	var result string
-	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
-		return nil, err
-	}
-
-	byteResult, err := common.HexToBytes(result)
-	if err != nil {
-		return big.NewInt(0), err
-	}
-	bigResult := big.NewInt(0).SetBytes(byteResult)
-
-	return bigResult, nil
-}
-
-func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error) {
+func (nfttoken *nfttoken) Mint(args reqcontract.MintArgs) (string, error) {
 
 	address, err := libs.StrKey2Address(args.MintAddress)
 	if err != nil {
 		return "", fmt.Errorf("invalid MintAddressPriKey to address err:%v", err)
 	}
-	cTypeAddr := abi.NewAddress(address)
-	amount, ok := new(big.Int).SetString(args.Amount, 10)
-	if !ok {
-		return "", fmt.Errorf("invalid Mint error")
-	}
-	packed, err := apis.GVA_ABI_STDTOKEN.Mint(cTypeAddr, abi.NewUint256(amount))
+
+	packed, err := apis.GVA_ABI_NFTTOKEN.Mint(abi.NewAddress(address))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
@@ -287,7 +273,7 @@ func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error
 	tokenTransfer.To = args.MintAddress
 	tokenTransfer.Data = packed
 
-	stdtokentransfer, err := transfer.EnCodeRawTransaction(stdtoken.CreatorAddressPrikey, tokenTransfer)
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(nfttoken.CreatorAddressPrikey, tokenTransfer)
 	if err != nil {
 		return "", fmt.Errorf("invalid mint err:%v", err)
 	}
@@ -300,55 +286,28 @@ func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (stdtoken *stdtoken) Burn(args reqcontract.StdTokenBurnArgs) (string, error) {
+func (nfttoken *nfttoken) Approve(args reqcontract.ApproveArgs) (string, error) {
 
-	addr := common.StrB58ToAddress(args.BurnAddress)
-	cTypeAddr := abi.NewAddress(addr)
-	amount, ok := new(big.Int).SetString(args.Amount, 10)
+	addressTo := common.StrB58ToAddress(args.ApproveToAddress)
+
+	openid, ok := new(big.Int).SetString(args.Openid, 10)
 	if !ok {
-		return "", fmt.Errorf("invalid Mint error")
+		return "", fmt.Errorf("invalid tokenId on the error")
 	}
-	packed, err := apis.GVA_ABI_STDTOKEN.Burn(cTypeAddr, abi.NewUint256(amount))
+
+	packed, err := apis.GVA_ABI_NFTTOKEN.Approve(abi.NewAddress(addressTo), abi.NewUint256(openid))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
 
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = args.BurnAddress
+	tokenTransfer.To = args.ApproveToAddress
 	tokenTransfer.Data = packed
-	stdtokentransfer, err := transfer.EnCodeRawTransaction(stdtoken.CreatorAddressPrikey, tokenTransfer)
-	if err != nil {
-		return "", fmt.Errorf("no connection established in service err:%v", err)
-	}
-	//交易数据转base64
-	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
-	if err != nil {
-		return "", err
-	}
-	return transfer.SendRawTransfer(transfer2Raw)
-}
 
-func (stdtoken *stdtoken) Approve(args reqcontract.StdTokenApproveArgs) (string, error) {
-
-	addr := common.StrB58ToAddress(args.ApproveSpenderAddress)
-	cTypeAddr := abi.NewAddress(addr)
-	amount, ok := new(big.Int).SetString(args.Amount, 10)
-	if !ok {
-		return "", fmt.Errorf("invalid Mint error")
-	}
-	packed, err := apis.GVA_ABI_STDTOKEN.Approve(cTypeAddr, abi.NewUint256(amount))
-	if err != nil {
-		return "", fmt.Errorf("no connection established in service err:%v", err)
-	}
-
-	tokenTransfer := new(reqtransfer.StringRawTransaction)
-	//初始化GAS和code
-	tokenTransfer.To = args.ApproveSpenderAddress
-	tokenTransfer.Data = packed
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.ApproveFromAddressPriKey, tokenTransfer)
 	if err != nil {
-		return "", fmt.Errorf("no connection established in service err:%v", err)
+		return "", fmt.Errorf("invalid mint err:%v", err)
 	}
 
 	//交易数据转base64
@@ -359,15 +318,50 @@ func (stdtoken *stdtoken) Approve(args reqcontract.StdTokenApproveArgs) (string,
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (stdtoken *stdtoken) TransferFrom(args reqcontract.StdTokenTransferFromArgs) (string, error) {
+func (nfttoken *nfttoken) SetApprovalForAll(args reqcontract.SetApproveForAllArgs) (string, error) {
+
+	toAddr := common.StrB58ToAddress(args.ApproveallToAddress)
+
+	var cTypeStatus abi.CTypeBool
+	if args.AllApproved {
+		cTypeStatus = abi.CTypeBool{1}
+	} else {
+		cTypeStatus = abi.CTypeBool{0}
+	}
+
+	packed, err := apis.GVA_ABI_NFTTOKEN.SetApprovalForAll(abi.NewAddress(toAddr), cTypeStatus)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	//初始化GAS和code
+	tokenTransfer.To = args.ApproveallToAddress
+	tokenTransfer.Data = packed
+
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.ApproveallFromAddressPriKey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("invalid mint err:%v", err)
+	}
+
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
+func (nfttoken *nfttoken) TransferFrom(args reqcontract.TransferFromArgs) (string, error) {
+
 	fromAddr := common.StrB58ToAddress(args.TransferFromAddress)
 	toAddr := common.StrB58ToAddress(args.TransferToAddress)
 
-	amount, ok := new(big.Int).SetString(args.TransferFromValue, 10)
+	tokenid, ok := new(big.Int).SetString(args.TransferFromTokenId, 10)
 	if !ok {
 		return "", fmt.Errorf("invalid Mint error")
 	}
-	packed, err := apis.GVA_ABI_STDTOKEN.TransferFrom(abi.NewAddress(fromAddr), abi.NewAddress(toAddr), abi.NewUint256(amount))
+	packed, err := apis.GVA_ABI_STDTOKEN.TransferFrom(abi.NewAddress(fromAddr), abi.NewAddress(toAddr), abi.NewUint256(tokenid))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
@@ -376,7 +370,7 @@ func (stdtoken *stdtoken) TransferFrom(args reqcontract.StdTokenTransferFromArgs
 	//初始化GAS和code
 	tokenTransfer.To = args.TransferToAddress
 	tokenTransfer.Data = packed
-	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.TransferSpenderAddressPriKey, tokenTransfer)
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.TransferOperatorAddressPriKey, tokenTransfer)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}

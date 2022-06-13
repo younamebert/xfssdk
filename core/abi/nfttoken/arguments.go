@@ -1,12 +1,14 @@
-package abi
+package nfttoken
 
 import (
 	"encoding/binary"
 	"fmt"
 	"reflect"
+
+	"github.com/younamebert/xfssdk/core/abi"
 )
 
-func writeStringParams(w Buffer, s CTypeString) {
+func writeStringParams(w Buffer, s abi.CTypeString) {
 	slen := len(s)
 	var slenbuf [8]byte
 	binary.LittleEndian.PutUint64(slenbuf[:], uint64(slen))
@@ -39,29 +41,37 @@ func (arguments Arguments) Pack(args ...interface{}) ([]byte, error) {
 			if typeofValue.Name() != "CTypeString" {
 				return nil, fmt.Errorf("param type check err")
 			}
-			para := argValue.(CTypeString)
+			para := argValue.(abi.CTypeString)
 			writeStringParams(buf, para)
 		} else if ObjType == "CTypeUint8" {
 			typeofValue := reflect.TypeOf(argValue)
 			if typeofValue.Name() != "CTypeUint8" {
 				return nil, fmt.Errorf("param type check err")
 			}
-			para := argValue.(CTypeUint8)
+			para := argValue.(abi.CTypeUint8)
 			buf.Write(para[:])
 		} else if ObjType == "CTypeUint256" {
 			typeofValue := reflect.TypeOf(argValue)
 			if typeofValue.Name() != "CTypeUint256" {
 				return nil, fmt.Errorf("param type check err")
 			}
-			para := argValue.(CTypeUint256)
+			para := argValue.(abi.CTypeUint256)
 			buf.Write(para[:])
 		} else if ObjType == "CTypeAddress" {
 			typeofValue := reflect.TypeOf(argValue)
 			if typeofValue.Name() != "CTypeAddress" {
 				return nil, fmt.Errorf("param type check err")
 			}
-			para := argValue.(CTypeAddress)
+			para := argValue.(abi.CTypeAddress)
 			buf.Write(para[:])
+		} else if ObjType == "CTypeBool" {
+			typeofValue := reflect.TypeOf(argValue)
+			if typeofValue.Name() != "CTypeBool" {
+				return nil, fmt.Errorf("param type check err")
+			}
+			para := argValue.(abi.CTypeBool)
+			buf.Write(para[:])
+
 		} else {
 			return nil, fmt.Errorf("type check err")
 		}
