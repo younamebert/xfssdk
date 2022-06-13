@@ -28,7 +28,7 @@ func (nftokenlocad *NFTTokenLocal) NFTCreate(args reqcontract.NFTTokenCreateArgs
 	return code, nil
 }
 
-func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployTokenArgs) (*nfttoken, string, error) {
+func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployTokenArgs) (NFTTokenCall, string, error) {
 	//创建合约交易
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	tokenTransfer.Data = args.Code

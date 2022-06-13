@@ -37,7 +37,6 @@ func Default() *Handle {
 		os.Exit(1)
 		return nil
 	}
-
 	return handle
 }
 
