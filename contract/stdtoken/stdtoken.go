@@ -31,10 +31,9 @@ func (stdtokenlocad *StdTokenLocal) Create(args reqcontract.TokenArgs) (string, 
 	if !ok {
 		return "", fmt.Errorf("invalid totalSupply type string to big.Int error val:%v", args.TotalSupply)
 	}
-
 	code, err := apis.GVA_ABI_STDTOKEN.Create(abi.CTypeString(args.Name), abi.CTypeString(args.Symbol), abi.NewUint8(uint8(decimal.Uint64())), abi.NewUint256(totalSupply))
 	if err != nil {
-		return "", fmt.Errorf("an exception occurred of contract argument")
+		return "", fmt.Errorf("an exception occurred of contract argument err:%v", err)
 	}
 
 	return code, err

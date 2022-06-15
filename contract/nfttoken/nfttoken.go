@@ -23,7 +23,7 @@ type NFTTokenLocal struct{}
 func (nftokenlocad *NFTTokenLocal) NFTCreate(args reqcontract.NFTTokenCreateArgs) (string, error) {
 	code, err := apis.GVA_ABI_NFTTOKEN.Create(abi.CTypeString(args.Name), abi.CTypeString(args.Symbol))
 	if err != nil {
-		return "", fmt.Errorf("no connection established in service err:%v", err)
+		return "", fmt.Errorf("an exception occurred of contract argument err:%v", err)
 	}
 	return code, nil
 }
