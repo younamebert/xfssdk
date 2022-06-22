@@ -48,6 +48,8 @@ func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs
 	if err != nil {
 		return nil, "", err
 	}
+
+	tokenTransfer.Value = "1"
 	//签名交易
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Addresskey, tokenTransfer)
 	if err != nil {
@@ -267,10 +269,11 @@ func (stdtoken *stdtoken) Allowance(args reqcontract.StdTokenAllowanceArgs) (*bi
 
 func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error) {
 
-	address, err := libs.StrKey2Address(args.MintAddress)
+	address, err := libs.StrKey2Address(stdtoken.CreatorAddressPrikey)
 	if err != nil {
 		return "", fmt.Errorf("invalid MintAddressPriKey to address err:%v", err)
 	}
+
 	cTypeAddr := abi.NewAddress(address)
 	amount, ok := new(big.Int).SetString(args.Amount, 10)
 	if !ok {
@@ -283,7 +286,7 @@ func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error
 
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = args.MintAddress
+	tokenTransfer.To = stdtoken.ContractAddress
 	tokenTransfer.Data = packed
 
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(stdtoken.CreatorAddressPrikey, tokenTransfer)

@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
-	"github.com/younamebert/xfssdk/common"
 	"github.com/younamebert/xfssdk/core/apis"
 	"github.com/younamebert/xfssdk/libs"
 	reqtransfer "github.com/younamebert/xfssdk/servce/transfer/request"
@@ -14,13 +14,6 @@ import (
 
 // EnCodeRawTransaction Create a signed transaction
 func EnCodeRawTransaction(fromprikey string, tx *reqtransfer.StringRawTransaction) (*reqtransfer.StringRawTransaction, error) {
-
-	if tx.GasLimit == "" {
-		tx.GasLimit = common.TxGas.String()
-	}
-	if tx.GasPrice == "" {
-		tx.GasPrice = common.DefaultGasPrice().String()
-	}
 	if tx.Version == "" {
 		tx.Version = "0"
 	}
@@ -37,6 +30,7 @@ func EnCodeRawTransaction(fromprikey string, tx *reqtransfer.StringRawTransactio
 		if err := apis.GVA_XFSCLICENT.CallMethod(1, "TxPool.GetAddrTxNonce", &reqGetNonce, &nonce); err != nil {
 			return nil, fmt.Errorf("invalid GetAddrTxNonce addr:%v err:%v", address.B58String(), err)
 		}
+		tx.Nonce = strconv.FormatInt(*nonce, 10)
 	}
 
 	if err := tx.SignWithPrivateKey(fromprikey); err != nil {

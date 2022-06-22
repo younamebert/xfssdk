@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	Key           = "0x01010e2f7fdf0c76d4dfaeb76a30aa1a98dcaf5d10dc9596cbafaf5806c14074a813"
+	Key           = "0x0101e0f42d6125c515fa1065875c665d22ac23cb2c9457d36e9dc4487cd873bad1c3"
 	app           *cli.App
 	handle        = xfssdk.Default()
 	stdtokenLocal = new(stdtoken.StdTokenLocal)
@@ -29,7 +29,6 @@ func init() {
 }
 
 func main() {
-
 	app.Commands = []cli.Command{
 		{
 			Name: "create",
@@ -37,6 +36,14 @@ func main() {
 			Usage:    "create <name> <symbol> <decimals> <totalSupply>",
 			Category: "arithmetic",
 			Action:   Stdtoken_Create,
+			// After: Stdtoken_Create,
+		},
+		{
+			Name: "deploy",
+			// Aliases:  []string{"create"},
+			Usage:    "deploy <code> <addrprikey>",
+			Category: "arithmetic",
+			Action:   Stdtoken_Deploy,
 			// After: Stdtoken_Create,
 		},
 	}
@@ -67,5 +74,27 @@ func Stdtoken_Create(c *cli.Context) error {
 		return err
 	}
 	fmt.Println(code)
+	return nil
+}
+
+func Stdtoken_Deploy(c *cli.Context) error {
+	args := c.Args()
+
+	if c.NArg() < 1 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+
+	argsDeploy := reqcontract.DeployTokenArgs{
+		Code:       args.Get(0),
+		Addresskey: Key,
+	}
+	_, txhash, err := stdtokenLocal.DeployToken(argsDeploy)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+		return err
+	}
+	fmt.Println(txhash)
 	return nil
 }

@@ -22,8 +22,8 @@ type StdTokenMintArgs struct {
 	// BlockChain      string `json:"blockchain"`
 	// FromAddress     string `json:"from_address"`
 	// ContractAddress string `json:"contract_address"`
-	MintAddress string `json:"mint_address"`
-	Amount      string `json:"amount"`
+	// MintAddress string `json:"mint_address"`
+	Amount string `json:"amount"`
 }
 
 // Burn requset
