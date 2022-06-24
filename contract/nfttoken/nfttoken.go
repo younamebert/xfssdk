@@ -28,7 +28,7 @@ func (nftokenlocad *NFTTokenLocal) NFTCreate(args reqcontract.NFTTokenCreateArgs
 	return code, nil
 }
 
-func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployTokenArgs) (NFTTokenCall, string, error) {
+func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployNFTokenArgs) (NFTTokenCall, string, error) {
 	//创建合约交易
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	tokenTransfer.Data = args.Code
@@ -47,6 +47,9 @@ func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployTokenAr
 	if err != nil {
 		return nil, "", err
 	}
+
+	bs, _ := common.MarshalIndent(transfer2Raw)
+	fmt.Println(string(bs))
 	// 发送一笔合约交易
 	txhash, err := transfer.SendRawTransfer(transfer2Raw)
 	if err != nil {
@@ -64,7 +67,7 @@ func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployTokenAr
 	caddr := crypto.CreateAddress(fromAddressHash, nonce)
 
 	//返回交易哈希和合约地址
-	result := &nfttoken{
+	result := &NFToken{
 		ContractAddress:      caddr.B58String(), //合约地址
 		CreatorAddressPrikey: args.Addresskey,   //创建人私钥
 	}
@@ -78,18 +81,18 @@ type NFTTokenCall interface {
 	OwnerOf(args reqcontract.OwnerOfArgs) (string, error)
 	IsApproveForAll(args reqcontract.ISApproveForAllArgs) (string, error)
 	GetApproved(args reqcontract.GetApprovedArgs) (string, error)
-	Mint(args reqcontract.MintArgs) (string, error)
+	Mint(args reqcontract.NFTokenMintArgs) (string, error)
 	Approve(args reqcontract.ApproveArgs) (string, error)
 	SetApprovalForAll(args reqcontract.SetApproveForAllArgs) (string, error)
 	TransferFrom(args reqcontract.TransferFromArgs) (string, error)
 }
 
-type nfttoken struct {
+type NFToken struct {
 	ContractAddress      string //合约地址
 	CreatorAddressPrikey string //创建人私钥
 }
 
-func (nfttoken *nfttoken) Address() common.Address {
+func (nfttoken *NFToken) Address() common.Address {
 	address, err := libs.StrKey2Address(nfttoken.CreatorAddressPrikey)
 	if err != nil {
 		fmt.Printf("StrKey2Address :%v\n", err)
@@ -99,7 +102,7 @@ func (nfttoken *nfttoken) Address() common.Address {
 }
 
 //获取合约名称合约
-func (nfttoken *nfttoken) Name() (string, error) {
+func (nfttoken *NFToken) Name() (string, error) {
 
 	packed, err := apis.GVA_ABI_NFTTOKEN.Name()
 	if err != nil {
@@ -121,7 +124,7 @@ func (nfttoken *nfttoken) Name() (string, error) {
 	return tokenname, nil
 }
 
-func (nfttoken *nfttoken) Symbol() (string, error) {
+func (nfttoken *NFToken) Symbol() (string, error) {
 
 	packed, err := apis.GVA_ABI_NFTTOKEN.Symbol()
 	if err != nil {
@@ -143,7 +146,7 @@ func (nfttoken *nfttoken) Symbol() (string, error) {
 	return tokenname, nil
 }
 
-func (nfttoken *nfttoken) BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, error) {
+func (nfttoken *NFToken) BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, error) {
 	packed, err := apis.GVA_ABI_NFTTOKEN.BalanceOf(args.BalanceOfAddress)
 	if err != nil {
 		return nil, fmt.Errorf("no connection established in service err:%v", err)
@@ -165,7 +168,7 @@ func (nfttoken *nfttoken) BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, e
 	return bigResult, nil
 }
 
-func (nfttoken *nfttoken) OwnerOf(args reqcontract.OwnerOfArgs) (string, error) {
+func (nfttoken *NFToken) OwnerOf(args reqcontract.OwnerOfArgs) (string, error) {
 
 	tokenid, ok := new(big.Int).SetString(args.TokenId, 10)
 	if !ok {
@@ -195,7 +198,7 @@ func (nfttoken *nfttoken) OwnerOf(args reqcontract.OwnerOfArgs) (string, error) 
 	return addr.B58String(), nil
 }
 
-func (nfttoken *nfttoken) IsApproveForAll(args reqcontract.ISApproveForAllArgs) (string, error) {
+func (nfttoken *NFToken) IsApproveForAll(args reqcontract.ISApproveForAllArgs) (string, error) {
 
 	ownerAddr := common.StrB58ToAddress(args.OwnerAddress)
 	spenderAddr := common.StrB58ToAddress(args.SpenderAddress)
@@ -224,7 +227,7 @@ func (nfttoken *nfttoken) IsApproveForAll(args reqcontract.ISApproveForAllArgs) 
 	return strData, nil
 }
 
-func (nfttoken *nfttoken) GetApproved(args reqcontract.GetApprovedArgs) (string, error) {
+func (nfttoken *NFToken) GetApproved(args reqcontract.GetApprovedArgs) (string, error) {
 
 	tokenid, ok := new(big.Int).SetString(args.TokenId, 10)
 	if !ok {
@@ -256,9 +259,9 @@ func (nfttoken *nfttoken) GetApproved(args reqcontract.GetApprovedArgs) (string,
 	return addr.B58String(), nil
 }
 
-func (nfttoken *nfttoken) Mint(args reqcontract.MintArgs) (string, error) {
+func (nfttoken *NFToken) Mint(args reqcontract.NFTokenMintArgs) (string, error) {
 
-	address, err := libs.StrKey2Address(args.MintAddress)
+	address, err := libs.StrKey2Address(nfttoken.CreatorAddressPrikey)
 	if err != nil {
 		return "", fmt.Errorf("invalid MintAddressPriKey to address err:%v", err)
 	}
@@ -267,12 +270,11 @@ func (nfttoken *nfttoken) Mint(args reqcontract.MintArgs) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
-
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = args.MintAddress
+	tokenTransfer.To = nfttoken.ContractAddress
 	tokenTransfer.Data = packed
-
+	// fmt.Printf()
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(nfttoken.CreatorAddressPrikey, tokenTransfer)
 	if err != nil {
 		return "", fmt.Errorf("invalid mint err:%v", err)
@@ -280,13 +282,14 @@ func (nfttoken *nfttoken) Mint(args reqcontract.MintArgs) (string, error) {
 
 	//交易数据转base64
 	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	fmt.Println(transfer2Raw)
 	if err != nil {
 		return "", err
 	}
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nfttoken *nfttoken) Approve(args reqcontract.ApproveArgs) (string, error) {
+func (nfttoken *NFToken) Approve(args reqcontract.ApproveArgs) (string, error) {
 
 	addressTo := common.StrB58ToAddress(args.ApproveToAddress)
 
@@ -318,7 +321,7 @@ func (nfttoken *nfttoken) Approve(args reqcontract.ApproveArgs) (string, error) 
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nfttoken *nfttoken) SetApprovalForAll(args reqcontract.SetApproveForAllArgs) (string, error) {
+func (nfttoken *NFToken) SetApprovalForAll(args reqcontract.SetApproveForAllArgs) (string, error) {
 
 	toAddr := common.StrB58ToAddress(args.ApproveallToAddress)
 
@@ -352,7 +355,7 @@ func (nfttoken *nfttoken) SetApprovalForAll(args reqcontract.SetApproveForAllArg
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nfttoken *nfttoken) TransferFrom(args reqcontract.TransferFromArgs) (string, error) {
+func (nfttoken *NFToken) TransferFrom(args reqcontract.TransferFromArgs) (string, error) {
 
 	fromAddr := common.StrB58ToAddress(args.TransferFromAddress)
 	toAddr := common.StrB58ToAddress(args.TransferToAddress)

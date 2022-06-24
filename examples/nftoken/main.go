@@ -9,7 +9,7 @@ import (
 	"github.com/younamebert/xfssdk"
 	"github.com/younamebert/xfssdk/common"
 	"github.com/younamebert/xfssdk/common/ahash"
-	"github.com/younamebert/xfssdk/contract/stdtoken"
+	"github.com/younamebert/xfssdk/contract/nfttoken"
 	"github.com/younamebert/xfssdk/crypto"
 	"github.com/younamebert/xfssdk/libs"
 	reqcontract "github.com/younamebert/xfssdk/servce/contract/request"
@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	Key           = "0x01012ad0c20731aa20999e5424e09329eaf421aca466e10aaa5cfc3ccc268aefc2aa"
-	app           *cli.App
-	handle        = xfssdk.Default()
-	stdtokenLocal = new(stdtoken.StdTokenLocal)
+	Key          = "0x010140e13c81c518c4452048eeeef601dafd66d1621be9ee696c71c1916440be9aa3"
+	app          *cli.App
+	handle       = xfssdk.Default()
+	nftokenLocal = new(nfttoken.NFTTokenLocal)
 )
 
 // var app = cli.NewApp()
@@ -28,7 +28,7 @@ var (
 func init() {
 	app = cli.NewApp()
 	app.Name = "xfssdk"
-	app.Usage = "xfssdk stdtoken"
+	app.Usage = "xfssdk nftoken"
 	app.Version = "1.0.0"
 	// handle.ContractEngine.StdToken = new(stdtoken.StdTokenLocal)
 }
@@ -36,29 +36,28 @@ func init() {
 func main() {
 	app.Commands = []cli.Command{
 		{
-			Name: "create",
-			// Aliases:  []string{"create"},
-			Usage:    "create <name> <symbol> <decimals> <totalSupply>",
+			Name:     "create",
+			Usage:    "create <name> <symbol>",
 			Category: "arithmetic",
-			Action:   Stdtoken_Create,
+			Action:   NFToken_Create,
 		},
 		{
 			Name:     "deploy",
 			Usage:    "deploy <code> <addrprikey>",
 			Category: "arithmetic",
-			Action:   Stdtoken_Deploy,
+			Action:   NFToken_Deploy,
 		},
 		{
 			Name:     "mint",
-			Usage:    "<addrprikey> <nonce> <amount>",
+			Usage:    "<addrprikey> <nonce> <tokenUri>",
 			Category: "arithmetic",
-			Action:   Stdtoken_Mint,
+			Action:   NFToken_Mint,
 		},
 		{
 			Name:     "caddr",
 			Usage:    "<address> <nonce>",
 			Category: "arithmetic",
-			Action:   Stdtoken_caddr,
+			Action:   NFToken_caddr,
 		},
 	}
 	err := app.Run(os.Args)
@@ -67,21 +66,19 @@ func main() {
 	}
 }
 
-func Stdtoken_Create(c *cli.Context) error {
+func NFToken_Create(c *cli.Context) error {
 	args := c.Args()
 
-	if c.NArg() < 4 {
+	if c.NArg() < 2 {
 		fmt.Println(c.App.Usage)
 		return nil
 	}
-	argsCreate := reqcontract.TokenArgs{
-		Name:        args.Get(0),
-		Symbol:      args.Get(1),
-		Decimals:    args.Get(2),
-		TotalSupply: args.Get(3),
+	argsCreate := reqcontract.NFTTokenCreateArgs{
+		Name:   args.Get(0),
+		Symbol: args.Get(1),
 	}
 
-	code, err := stdtokenLocal.Create(argsCreate)
+	code, err := nftokenLocal.NFTCreate(argsCreate)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -91,7 +88,7 @@ func Stdtoken_Create(c *cli.Context) error {
 	return nil
 }
 
-func Stdtoken_Deploy(c *cli.Context) error {
+func NFToken_Deploy(c *cli.Context) error {
 	args := c.Args()
 
 	if c.NArg() < 1 {
@@ -99,11 +96,11 @@ func Stdtoken_Deploy(c *cli.Context) error {
 		return nil
 	}
 
-	argsDeploy := reqcontract.DeployTokenArgs{
+	argsDeploy := reqcontract.DeployNFTokenArgs{
 		Code:       args.Get(0),
 		Addresskey: Key,
 	}
-	_, txhash, err := stdtokenLocal.DeployToken(argsDeploy)
+	_, txhash, err := nftokenLocal.NFTDeployToken(argsDeploy)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -113,7 +110,7 @@ func Stdtoken_Deploy(c *cli.Context) error {
 	return nil
 }
 
-func Stdtoken_Mint(c *cli.Context) error {
+func NFToken_Mint(c *cli.Context) error {
 	args := c.Args()
 
 	addr, err := libs.StrKey2Address(args.Get(0))
@@ -127,15 +124,15 @@ func Stdtoken_Mint(c *cli.Context) error {
 	fromAddressHashBytes := ahash.SHA256(addr[:])
 	fromAddressHash := common.Bytes2Hash(fromAddressHashBytes)
 	caddr := crypto.CreateAddress(fromAddressHash, uint64(nonceInt))
-	stdtokenClass := &stdtoken.StdToken{
+	nftokenClass := &nfttoken.NFToken{
 		ContractAddress:      caddr.B58String(),
 		CreatorAddressPrikey: args.Get(0),
 	}
 
-	argsMint := reqcontract.StdTokenMintArgs{
-		Amount: args.Get(2),
+	argsMint := reqcontract.NFTokenMintArgs{
+		TokenId: args.Get(2),
 	}
-	txhash, err := stdtokenClass.Mint(argsMint)
+	txhash, err := nftokenClass.Mint(argsMint)
 	if err != nil {
 		return err
 	}
@@ -143,7 +140,7 @@ func Stdtoken_Mint(c *cli.Context) error {
 	return nil
 }
 
-func Stdtoken_caddr(c *cli.Context) error {
+func NFToken_caddr(c *cli.Context) error {
 	args := c.Args()
 	address := common.StrB58ToAddress(args.Get(0))
 	nonceInt, err := strconv.Atoi(args.Get(1))

@@ -20,6 +20,8 @@ type StringRawTransaction struct {
 	To        string `json:"to"`
 	Value     string `json:"value"`
 	Data      string `json:"data"`
+	GasLimit  string `json:"gas_limit"`
+	GasPrice  string `json:"gas_price"`
 	Signature string `json:"signature"`
 	Nonce     string `json:"nonce"`
 }
@@ -65,14 +67,14 @@ func (tx *StringRawTransaction) Transfer2Raw() (string, error) {
 
 // signHash generate transaction hash
 func (tx *StringRawTransaction) SignHash() common.Hash {
-	//nt := t.copyTrim()
-
 	tmp := map[string]string{
-		"version": tx.Value,
-		"to":      tx.To,
-		"data":    tx.Data,
-		"nonce":   tx.Nonce,
-		"value":   tx.Value,
+		"version":   tx.Version,
+		"to":        tx.To,
+		"gas_price": tx.GasPrice,
+		"gas_limit": tx.GasLimit,
+		"data":      tx.Data,
+		"nonce":     tx.Nonce,
+		"value":     tx.Value,
 	}
 	enc := common.SortAndEncodeMap(tmp)
 	if enc == "" {

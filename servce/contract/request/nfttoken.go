@@ -5,6 +5,20 @@ type NFTTokenCreateArgs struct {
 	Symbol string `json:"symbol"`
 }
 
+type DeployNFTokenArgs struct {
+	Code       string `json:"code"`
+	Addresskey string `json:"address_key"`
+}
+
+// mint request
+type NFTokenMintArgs struct {
+	// BlockChain      string `json:"blockchain"`
+	// FromAddress     string `json:"from_address"`
+	// ContractAddress string `json:"contract_address"`
+	// MintAddress string `json:"mint_address"`
+	TokenId string `json:"token_id"`
+}
+
 type BalanceOfArgs struct {
 	BalanceOfAddress string `json:"balance_of_address"`
 }
@@ -22,9 +36,9 @@ type GetApprovedArgs struct {
 	TokenId string `json:"token_id"`
 }
 
-type MintArgs struct {
-	MintAddress string `json:"mint_address"`
-}
+// type MintArgs struct {
+// 	MintAddress string `json:"mint_address"`
+// }
 
 type ApproveArgs struct {
 	ApproveFromAddressPriKey string `json:"approve_from_address_prikey"`

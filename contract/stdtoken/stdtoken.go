@@ -39,7 +39,7 @@ func (stdtokenlocad *StdTokenLocal) Create(args reqcontract.TokenArgs) (string, 
 	return code, err
 }
 
-func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs) (*stdtoken, string, error) {
+func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs) (*StdToken, string, error) {
 	//创建合约交易
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	tokenTransfer.Data = args.Code
@@ -48,8 +48,6 @@ func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs
 	if err != nil {
 		return nil, "", err
 	}
-
-	tokenTransfer.Value = "1"
 	//签名交易
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Addresskey, tokenTransfer)
 	if err != nil {
@@ -57,6 +55,7 @@ func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs
 	}
 
 	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	fmt.Println(transfer2Raw)
 	if err != nil {
 		return nil, "", err
 	}
@@ -77,7 +76,7 @@ func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs
 	caddr := crypto.CreateAddress(fromAddressHash, nonce)
 
 	//返回交易哈希和合约地址
-	result := &stdtoken{
+	result := &StdToken{
 		ContractAddress:      caddr.B58String(), //合约地址
 		CreatorAddressPrikey: args.Addresskey,   //创建人私钥
 	}
@@ -98,12 +97,12 @@ type StdTokenCall interface {
 	TransferFrom(args reqcontract.StdTokenTransferFromArgs) (string, error)
 }
 
-type stdtoken struct {
+type StdToken struct {
 	ContractAddress      string //合约地址
 	CreatorAddressPrikey string //创建人私钥
 }
 
-func (stdtoken *stdtoken) Address() common.Address {
+func (stdtoken *StdToken) Address() common.Address {
 	address, err := libs.StrKey2Address(stdtoken.CreatorAddressPrikey)
 	if err != nil {
 		fmt.Printf("StrKey2Address :%v\n", err)
@@ -113,7 +112,7 @@ func (stdtoken *stdtoken) Address() common.Address {
 }
 
 //获取合约名称合约
-func (stdtoken *stdtoken) Name() (string, error) {
+func (stdtoken *StdToken) Name() (string, error) {
 
 	packed, err := apis.GVA_ABI_STDTOKEN.Name()
 	if err != nil {
@@ -135,7 +134,7 @@ func (stdtoken *stdtoken) Name() (string, error) {
 	return tokenname, nil
 }
 
-func (stdtoken *stdtoken) Symbol() (string, error) {
+func (stdtoken *StdToken) Symbol() (string, error) {
 
 	packed, err := apis.GVA_ABI_STDTOKEN.Symbol()
 	if err != nil {
@@ -158,7 +157,7 @@ func (stdtoken *stdtoken) Symbol() (string, error) {
 	return strData, nil
 }
 
-func (stdtoken *stdtoken) GetDecimals() (*big.Int, error) {
+func (stdtoken *StdToken) GetDecimals() (*big.Int, error) {
 
 	packed, err := apis.GVA_ABI_STDTOKEN.GetDecimals()
 	if err != nil {
@@ -185,7 +184,7 @@ func (stdtoken *stdtoken) GetDecimals() (*big.Int, error) {
 	return bigResult, nil
 }
 
-func (stdtoken *stdtoken) GetTotalSupply() (*big.Int, error) {
+func (stdtoken *StdToken) GetTotalSupply() (*big.Int, error) {
 
 	packed, err := apis.GVA_ABI_STDTOKEN.GetTotalSupply()
 	if err != nil {
@@ -208,7 +207,7 @@ func (stdtoken *stdtoken) GetTotalSupply() (*big.Int, error) {
 	return bigResult, nil
 }
 
-func (stdtoken *stdtoken) BalanceOf(account_address string) (*big.Int, error) {
+func (stdtoken *StdToken) BalanceOf(account_address string) (*big.Int, error) {
 
 	accoutAddr := common.StrB58ToAddress(account_address)
 
@@ -235,7 +234,7 @@ func (stdtoken *stdtoken) BalanceOf(account_address string) (*big.Int, error) {
 	return bigResult, nil
 }
 
-func (stdtoken *stdtoken) Allowance(args reqcontract.StdTokenAllowanceArgs) (*big.Int, error) {
+func (stdtoken *StdToken) Allowance(args reqcontract.StdTokenAllowanceArgs) (*big.Int, error) {
 
 	ownerAddr := common.StrB58ToAddress(args.OwnerAddress)
 	cTypeOwnerAddr := abi.NewAddress(ownerAddr)
@@ -267,7 +266,7 @@ func (stdtoken *stdtoken) Allowance(args reqcontract.StdTokenAllowanceArgs) (*bi
 	return bigResult, nil
 }
 
-func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error) {
+func (stdtoken *StdToken) Mint(args reqcontract.StdTokenMintArgs) (string, error) {
 
 	address, err := libs.StrKey2Address(stdtoken.CreatorAddressPrikey)
 	if err != nil {
@@ -283,7 +282,6 @@ func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
-
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
 	tokenTransfer.To = stdtoken.ContractAddress
@@ -302,7 +300,7 @@ func (stdtoken *stdtoken) Mint(args reqcontract.StdTokenMintArgs) (string, error
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (stdtoken *stdtoken) Burn(args reqcontract.StdTokenBurnArgs) (string, error) {
+func (stdtoken *StdToken) Burn(args reqcontract.StdTokenBurnArgs) (string, error) {
 
 	addr := common.StrB58ToAddress(args.BurnAddress)
 	cTypeAddr := abi.NewAddress(addr)
@@ -331,7 +329,7 @@ func (stdtoken *stdtoken) Burn(args reqcontract.StdTokenBurnArgs) (string, error
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (stdtoken *stdtoken) Approve(args reqcontract.StdTokenApproveArgs) (string, error) {
+func (stdtoken *StdToken) Approve(args reqcontract.StdTokenApproveArgs) (string, error) {
 
 	addr := common.StrB58ToAddress(args.ApproveSpenderAddress)
 	cTypeAddr := abi.NewAddress(addr)
@@ -361,7 +359,7 @@ func (stdtoken *stdtoken) Approve(args reqcontract.StdTokenApproveArgs) (string,
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (stdtoken *stdtoken) TransferFrom(args reqcontract.StdTokenTransferFromArgs) (string, error) {
+func (stdtoken *StdToken) TransferFrom(args reqcontract.StdTokenTransferFromArgs) (string, error) {
 	fromAddr := common.StrB58ToAddress(args.TransferFromAddress)
 	toAddr := common.StrB58ToAddress(args.TransferToAddress)
 

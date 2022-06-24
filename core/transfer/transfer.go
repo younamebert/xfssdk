@@ -4,8 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"strconv"
 
+	"github.com/younamebert/xfssdk/common"
 	"github.com/younamebert/xfssdk/core/apis"
 	"github.com/younamebert/xfssdk/libs"
 	reqtransfer "github.com/younamebert/xfssdk/servce/transfer/request"
@@ -17,7 +19,9 @@ func EnCodeRawTransaction(fromprikey string, tx *reqtransfer.StringRawTransactio
 	if tx.Version == "" {
 		tx.Version = "0"
 	}
-
+	if tx.Value == "" {
+		tx.Value = "0"
+	}
 	if tx.Nonce == "" {
 		address, err := libs.StrKey2Address(fromprikey)
 		if err != nil {
@@ -33,6 +37,43 @@ func EnCodeRawTransaction(fromprikey string, tx *reqtransfer.StringRawTransactio
 		tx.Nonce = strconv.FormatInt(*nonce, 10)
 	}
 
+	if tx.GasLimit == "" {
+		tx.GasLimit = common.TxGas.String()
+	} else {
+		gaslimit, ok := new(big.Int).SetString(tx.GasLimit, 10)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse gaslimit")
+		}
+		if gaslimit.Cmp(common.TxGas) < 0 {
+			return nil, fmt.Errorf("gaslimit did not reach the lowest peugeot")
+		}
+	}
+
+	if tx.GasLimit == "" {
+		tx.GasLimit = common.TxGas.String()
+	} else {
+		gaslimit, ok := new(big.Int).SetString(tx.GasLimit, 10)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse gaslimit")
+		}
+		if gaslimit.Cmp(common.TxGas) < 0 {
+			return nil, fmt.Errorf("gaslimit did not reach the lowest peugeot")
+		}
+		tx.GasLimit = gaslimit.Text(10)
+	}
+
+	if tx.GasPrice == "" {
+		tx.GasPrice = common.DefaultGasPrice().String()
+	} else {
+		gasprice, ok := new(big.Int).SetString(tx.GasPrice, 10)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse gaslimit")
+		}
+		if gasprice.Cmp(common.DefaultGasPrice()) < 0 {
+			return nil, fmt.Errorf("gasprice did not reach the lowest peugeot")
+		}
+		tx.GasLimit = gasprice.Text(10)
+	}
 	if err := tx.SignWithPrivateKey(fromprikey); err != nil {
 		return nil, err
 	}
