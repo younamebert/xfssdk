@@ -38,7 +38,7 @@ func (abi ABI) PackArgs(name string, args ...interface{}) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(hex.EncodeToString(arguments))
 	return arguments, nil
 }
 

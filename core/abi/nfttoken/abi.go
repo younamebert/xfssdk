@@ -38,7 +38,7 @@ func (abi ABI) PackArgs(name string, args ...interface{}) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(hex.EncodeToString(arguments))
 	return arguments, nil
 }
 
@@ -149,13 +149,13 @@ func (abi ABI) GetApproved(params ...interface{}) (string, error) {
 }
 
 func (abi ABI) SetApprovalForAll(params ...interface{}) (string, error) {
-	args, err := abi.PackArgs(SETAPPROVALFORALL, params...)
+	args, err := abi.PackArgs(SETAPPROVAEFORALL, params...)
 	if err != nil {
 		return "", err
 	}
 
 	data := common.FromHex(NFTBIN)
-	dataMethod := common.FromHex(SETAPPROVALFORALL)
+	dataMethod := common.FromHex(SETAPPROVAEFORALL)
 	data = append(data, dataMethod...)
 	data = append(data, args...)
 
@@ -198,7 +198,6 @@ func (abi ABI) Mint(params ...interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	data := common.FromHex(NFTBIN)
 	dataMethod := common.FromHex(MINT)
 	data = append(data, dataMethod...)

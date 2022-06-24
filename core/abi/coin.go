@@ -171,8 +171,3 @@ func NewAddress(n common.Address) (m CTypeAddress) {
 	copy(m[:], n[:])
 	return
 }
-
-func NewString(n string) (m CTypeString) {
-	copy(m[:], n[:])
-	return
-}

@@ -266,7 +266,7 @@ func (nfttoken *NFToken) Mint(args reqcontract.NFTokenMintArgs) (string, error) 
 		return "", fmt.Errorf("invalid MintAddressPriKey to address err:%v", err)
 	}
 
-	packed, err := apis.GVA_ABI_NFTTOKEN.Mint(abi.NewAddress(address))
+	packed, err := apis.GVA_ABI_NFTTOKEN.Mint(abi.NewAddress(address), abi.CTypeString(args.TokenId))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
