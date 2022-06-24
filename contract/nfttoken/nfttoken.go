@@ -77,14 +77,14 @@ func (nftokenlocad *NFTTokenLocal) NFTDeployToken(args reqcontract.DeployNFToken
 type NFTTokenCall interface {
 	Name() (string, error)
 	Symbol() (string, error)
-	BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, error)
-	OwnerOf(args reqcontract.OwnerOfArgs) (string, error)
-	IsApproveForAll(args reqcontract.ISApproveForAllArgs) (string, error)
-	GetApproved(args reqcontract.GetApprovedArgs) (string, error)
+	BalanceOf(args reqcontract.NFTBalanceOfArgs) (*big.Int, error)
+	OwnerOf(args reqcontract.NFTOwnerOfArgs) (string, error)
+	IsApproveForAll(args reqcontract.NFTISApproveForAllArgs) (string, error)
+	GetApproved(args reqcontract.NFTGetApprovedArgs) (string, error)
 	Mint(args reqcontract.NFTokenMintArgs) (string, error)
-	Approve(args reqcontract.ApproveArgs) (string, error)
-	SetApprovalForAll(args reqcontract.SetApproveForAllArgs) (string, error)
-	TransferFrom(args reqcontract.TransferFromArgs) (string, error)
+	Approve(args reqcontract.NFTApproveArgs) (string, error)
+	SetApprovalForAll(args reqcontract.NFTSetApproveForAllArgs) (string, error)
+	TransferFrom(args reqcontract.NFTTransferFromArgs) (string, error)
 }
 
 type NFToken struct {
@@ -146,7 +146,7 @@ func (nfttoken *NFToken) Symbol() (string, error) {
 	return tokenname, nil
 }
 
-func (nfttoken *NFToken) BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, error) {
+func (nfttoken *NFToken) BalanceOf(args reqcontract.NFTBalanceOfArgs) (*big.Int, error) {
 	packed, err := apis.GVA_ABI_NFTTOKEN.BalanceOf(args.BalanceOfAddress)
 	if err != nil {
 		return nil, fmt.Errorf("no connection established in service err:%v", err)
@@ -168,7 +168,7 @@ func (nfttoken *NFToken) BalanceOf(args reqcontract.BalanceOfArgs) (*big.Int, er
 	return bigResult, nil
 }
 
-func (nfttoken *NFToken) OwnerOf(args reqcontract.OwnerOfArgs) (string, error) {
+func (nfttoken *NFToken) OwnerOf(args reqcontract.NFTOwnerOfArgs) (string, error) {
 
 	tokenid, ok := new(big.Int).SetString(args.TokenId, 10)
 	if !ok {
@@ -198,7 +198,7 @@ func (nfttoken *NFToken) OwnerOf(args reqcontract.OwnerOfArgs) (string, error) {
 	return addr.B58String(), nil
 }
 
-func (nfttoken *NFToken) IsApproveForAll(args reqcontract.ISApproveForAllArgs) (string, error) {
+func (nfttoken *NFToken) IsApproveForAll(args reqcontract.NFTISApproveForAllArgs) (string, error) {
 
 	ownerAddr := common.StrB58ToAddress(args.OwnerAddress)
 	spenderAddr := common.StrB58ToAddress(args.SpenderAddress)
@@ -227,7 +227,7 @@ func (nfttoken *NFToken) IsApproveForAll(args reqcontract.ISApproveForAllArgs) (
 	return strData, nil
 }
 
-func (nfttoken *NFToken) GetApproved(args reqcontract.GetApprovedArgs) (string, error) {
+func (nfttoken *NFToken) GetApproved(args reqcontract.NFTGetApprovedArgs) (string, error) {
 
 	tokenid, ok := new(big.Int).SetString(args.TokenId, 10)
 	if !ok {
@@ -289,7 +289,7 @@ func (nfttoken *NFToken) Mint(args reqcontract.NFTokenMintArgs) (string, error) 
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nfttoken *NFToken) Approve(args reqcontract.ApproveArgs) (string, error) {
+func (nfttoken *NFToken) Approve(args reqcontract.NFTApproveArgs) (string, error) {
 
 	addressTo := common.StrB58ToAddress(args.ApproveToAddress)
 
@@ -321,7 +321,7 @@ func (nfttoken *NFToken) Approve(args reqcontract.ApproveArgs) (string, error) {
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nfttoken *NFToken) SetApprovalForAll(args reqcontract.SetApproveForAllArgs) (string, error) {
+func (nfttoken *NFToken) SetApprovalForAll(args reqcontract.NFTSetApproveForAllArgs) (string, error) {
 
 	toAddr := common.StrB58ToAddress(args.ApproveallToAddress)
 
@@ -355,7 +355,7 @@ func (nfttoken *NFToken) SetApprovalForAll(args reqcontract.SetApproveForAllArgs
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nfttoken *NFToken) TransferFrom(args reqcontract.TransferFromArgs) (string, error) {
+func (nfttoken *NFToken) TransferFrom(args reqcontract.NFTTransferFromArgs) (string, error) {
 
 	fromAddr := common.StrB58ToAddress(args.TransferFromAddress)
 	toAddr := common.StrB58ToAddress(args.TransferToAddress)

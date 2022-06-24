@@ -19,20 +19,20 @@ type NFTokenMintArgs struct {
 	TokenId string `json:"token_id"`
 }
 
-type BalanceOfArgs struct {
+type NFTBalanceOfArgs struct {
 	BalanceOfAddress string `json:"balance_of_address"`
 }
 
-type OwnerOfArgs struct {
+type NFTOwnerOfArgs struct {
 	TokenId string `json:"token_id"`
 }
 
-type ISApproveForAllArgs struct {
+type NFTISApproveForAllArgs struct {
 	OwnerAddress   string `json:"owner_address"`
 	SpenderAddress string `json:"spender_address"`
 }
 
-type GetApprovedArgs struct {
+type NFTGetApprovedArgs struct {
 	TokenId string `json:"token_id"`
 }
 
@@ -40,19 +40,19 @@ type GetApprovedArgs struct {
 // 	MintAddress string `json:"mint_address"`
 // }
 
-type ApproveArgs struct {
+type NFTApproveArgs struct {
 	ApproveFromAddressPriKey string `json:"approve_from_address_prikey"`
 	ApproveToAddress         string `json:"approve_to_address"`
 	Openid                   string `json:"openid"`
 }
 
-type SetApproveForAllArgs struct {
+type NFTSetApproveForAllArgs struct {
 	ApproveallFromAddressPriKey string `json:"approveall_from_adress_prikey"`
 	ApproveallToAddress         string `json:"approveall_to_adress"`
 	AllApproved                 bool   `json:"all_approved"`
 }
 
-type TransferFromArgs struct {
+type NFTTransferFromArgs struct {
 	TransferOperatorAddressPriKey string `json:"transfer_operator_address_prikey"`
 	TransferFromAddress           string `json:"transfer_from_address"`
 	TransferToAddress             string `json:"transfer_to_address"`
