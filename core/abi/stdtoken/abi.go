@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/younamebert/xfssdk/common"
 )
@@ -15,8 +16,14 @@ type Method struct {
 	ReturnType string    `json:"returnType"`
 }
 
+type Events struct {
+	Name string     `json:"name"`
+	Argc int        `json:"argc"`
+	Args ArgsEvents `json:"args"`
+}
+
 type ABI struct {
-	EVENTS  map[string]*Method
+	Events  map[string]*Events
 	Methods map[string]*Method
 }
 
@@ -40,6 +47,36 @@ func (abi ABI) PackArgs(name string, args ...interface{}) ([]byte, error) {
 	}
 	fmt.Println(hex.EncodeToString(arguments))
 	return arguments, nil
+}
+
+func (abi ABI) PackEventsName(events []*Event) ([]*Event, error) {
+	var (
+		eventsnames        = make(map[string]struct{})
+		abieventsnames     = make(map[string]struct{})
+		argc           int = len(events)
+	)
+
+	for _, obj := range events {
+		name := strings.ToLower(obj.Name)
+		eventsnames[name] = struct{}{}
+	}
+	for _, v := range abi.Events {
+		if v.Argc == argc {
+			for _, obj := range v.Args {
+				name := strings.ToLower(obj.Name)
+				if _, exist := eventsnames[name]; exist {
+					abieventsnames[name] = struct{}{}
+				}
+			}
+		}
+
+		if len(abieventsnames) == len(eventsnames) {
+			return v.Args.Pack(events)
+		} else {
+			abieventsnames = make(map[string]struct{})
+		}
+	}
+	return nil, fmt.Errorf("not events")
 }
 
 func (abi ABI) Create(params ...interface{}) (string, error) {
