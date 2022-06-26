@@ -50,6 +50,14 @@ func Map2Events(mapEvents map[string]interface{}) []*Event {
 	return events
 }
 
+func Events2Map(events []*Event) map[string]interface{} {
+	result := make(map[string]interface{}, 0)
+	for _, v := range events {
+		result[v.Name] = v.Value
+	}
+	return result
+}
+
 type ArgsEvent struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
@@ -81,6 +89,7 @@ func (argevents ArgsEvents) Pack(args []*Event) ([]*Event, error) {
 						return nil, fmt.Errorf("ctypeuint256 to uint256:%v", v.Value)
 					}
 					para := abi.NewUint8(uint8(big8.Uint64()))
+					fmt.Println(para.Uint8())
 					event.Value = para.Uint8()
 				} else if obj.Type == "CTypeUint256" {
 					big256, ok := big.NewInt(0).SetString(vas, 16)
@@ -88,6 +97,7 @@ func (argevents ArgsEvents) Pack(args []*Event) ([]*Event, error) {
 						return nil, fmt.Errorf("ctypeuint256 to uint256:%v", v.Value)
 					}
 					para := abi.NewUint256(big256)
+					fmt.Println(para)
 					event.Value = para.BigInt().String()
 				} else if obj.Type == "CTypeAddress" {
 					addrBytes, err := hex.DecodeString(vas)

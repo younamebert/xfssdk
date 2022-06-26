@@ -26,11 +26,12 @@ func Test_PackEventsName(t *testing.T) {
 		t.Fatal(err)
 		return
 	}
-	eventsResp, err := abi.PackEventsName(events)
+	eventsobj, err := abi.PackEventsName(events)
 	if err != nil {
 		t.Fatal(err)
 		return
 	}
+	eventsResp := Events2Map(eventsobj)
 	bs, err := common.MarshalIndent(eventsResp)
 	if err != nil {
 		t.Fatal(err)

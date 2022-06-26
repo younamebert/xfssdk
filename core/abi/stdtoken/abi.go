@@ -71,6 +71,8 @@ func (abi ABI) PackEventsName(events []*Event) ([]*Event, error) {
 		}
 
 		if len(abieventsnames) == len(eventsnames) {
+			bs, _ := common.MarshalIndent(v)
+			fmt.Println(string(bs))
 			return v.Args.Pack(events)
 		} else {
 			abieventsnames = make(map[string]struct{})
