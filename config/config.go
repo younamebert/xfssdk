@@ -41,7 +41,7 @@ func DefaultHandleConfig() *HandleConfig {
 	return &HandleConfig{
 		Networkid:       1,
 		Version:         1,
-		NodeLink:        "http://192.168.2.13:9012/", // http://192.168.2.13:9014/
+		NodeLink:        "http://192.168.2.13:9014/", // http://192.168.2.13:9014/
 		NodeLinkOutTime: "5s",
 		Logger:          DefaultLoggerConfig(),
 	}

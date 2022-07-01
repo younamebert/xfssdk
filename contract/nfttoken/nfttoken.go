@@ -371,7 +371,7 @@ func (nfttoken *NFToken) TransferFrom(args reqcontract.NFTTransferFromArgs) (str
 
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = args.TransferToAddress
+	tokenTransfer.To = nfttoken.ContractAddress
 	tokenTransfer.Data = packed
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.TransferOperatorAddressPriKey, tokenTransfer)
 	if err != nil {

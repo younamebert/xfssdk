@@ -54,6 +54,12 @@ func main() {
 			Action:   NFToken_Mint,
 		},
 		{
+			Name:     "transferfrom",
+			Usage:    "",
+			Category: "arithmetic",
+			Action:   NFToken_TransferFrom,
+		},
+		{
 			Name:     "caddr",
 			Usage:    "<address> <nonce>",
 			Category: "arithmetic",
@@ -88,6 +94,26 @@ func NFToken_Create(c *cli.Context) error {
 	return nil
 }
 
+func NFToken_TransferFrom(c *cli.Context) error {
+	tokenobj := nfttoken.NFToken{
+		ContractAddress:      "UaU2m81hA2HFQaUW6khN1VF7yVmiHCKeE",
+		CreatorAddressPrikey: "0x010164ed4696c0681b9c6978e3b87176ebaccc2c24af46b262db50fcb8dbb351ede1",
+	}
+	argsTransferFrom := reqcontract.NFTTransferFromArgs{
+		TransferOperatorAddressPriKey: "0x010164ed4696c0681b9c6978e3b87176ebaccc2c24af46b262db50fcb8dbb351ede1",
+		TransferFromAddress:           "bQfi7kVUf2VAUsBk1R9FEzHXdtNtD98bs",
+		TransferToAddress:             "gMpwuZXc5b6URXNEu1rhoqS6XMMeZGH4i",
+		TransferFromTokenId:           "3",
+	}
+	txhash, err := tokenobj.TransferFrom(argsTransferFrom)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+		return err
+	}
+	fmt.Println(txhash)
+	return nil
+}
 func NFToken_Deploy(c *cli.Context) error {
 	args := c.Args()
 

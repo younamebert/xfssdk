@@ -30,13 +30,21 @@ func Map2Hex(events []*Event) map[string]interface{} {
 }
 
 func Str2Events(jsonEvents string) ([]*Event, error) {
-	events := make(map[string]interface{}, 0)
+	events := make(map[string]interface{})
 	err := json.Unmarshal([]byte(jsonEvents), &events)
 	if err != nil {
 		return nil, err
 	}
 	es := Map2Events(events)
 	return es, nil
+}
+
+func Events2Map(events []*Event) map[string]interface{} {
+	result := make(map[string]interface{})
+	for _, v := range events {
+		result[v.Name] = v.Value
+	}
+	return result
 }
 
 func Map2Events(mapEvents map[string]interface{}) []*Event {
