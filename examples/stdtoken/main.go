@@ -17,7 +17,12 @@ import (
 )
 
 var (
-	Key           = "0x01012ad0c20731aa20999e5424e09329eaf421aca466e10aaa5cfc3ccc268aefc2aa"
+	Key              = "0x01018deb6aac861402b051b58dbea64ab26596e25588f73b5ea937fa1903d24cbdfc"
+	DefaultAddr      = crypto.Prikey2Addr(Key)
+	deafaultStdtoken = &stdtoken.StdToken{
+		ContractAddress:      "fobxo9XmCufb7q72WoQ4Kgz3gRt7Visrz",
+		CreatorAddressPrikey: Key,
+	}
 	app           *cli.App
 	handle        = xfssdk.Default()
 	stdtokenLocal = new(stdtoken.StdTokenLocal)
@@ -55,10 +60,22 @@ func main() {
 			Action:   Stdtoken_Mint,
 		},
 		{
+			Name:     "balanceof",
+			Usage:    "<caddress>",
+			Category: "arithmetic",
+			Action:   Stdtoken_BalanceOf,
+		},
+		{
 			Name:     "caddr",
 			Usage:    "<address> <nonce>",
 			Category: "arithmetic",
 			Action:   Stdtoken_caddr,
+		},
+		{
+			Name:     "transfer",
+			Usage:    "<to> <amount>",
+			Category: "arithmetic",
+			Action:   Stdtoken_Transfer,
 		},
 	}
 	err := app.Run(os.Args)
@@ -90,7 +107,6 @@ func Stdtoken_Create(c *cli.Context) error {
 	fmt.Println(code)
 	return nil
 }
-
 func Stdtoken_Deploy(c *cli.Context) error {
 	args := c.Args()
 
@@ -110,6 +126,16 @@ func Stdtoken_Deploy(c *cli.Context) error {
 		return err
 	}
 	fmt.Println(txhash)
+	return nil
+}
+
+func Stdtoken_BalanceOf(c *cli.Context) error {
+	args := c.Args()
+	balance, err := deafaultStdtoken.BalanceOf(args.Get(0))
+	if err != nil {
+		return err
+	}
+	fmt.Printf("bal:%v\n", balance.String())
 	return nil
 }
 
@@ -152,5 +178,20 @@ func Stdtoken_caddr(c *cli.Context) error {
 	}
 	caddr := crypto.GetCAddr(address, uint64(nonceInt))
 	fmt.Println(caddr.B58String())
+	return nil
+}
+
+func Stdtoken_Transfer(c *cli.Context) error {
+	args := c.Args()
+	argsTransfer := reqcontract.StdTokenTransferArgs{
+		TransferFromAddressPriKey: Key,
+		TransferToAddress:         args.Get(0),
+		TransferAmount:            args.Get(1),
+	}
+	txhash, err := deafaultStdtoken.Transfer(argsTransfer)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("txhahs:%v\n", txhash)
 	return nil
 }

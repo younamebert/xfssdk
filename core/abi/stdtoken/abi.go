@@ -146,7 +146,6 @@ func (abi ABI) GetTotalSupply() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	data := common.FromHex(XFSTOKENBin)
 	dataMethod := common.FromHex(GETTOTALSUPPLY)
 	data = append(data, dataMethod...)
@@ -240,6 +239,20 @@ func (abi ABI) TransferFrom(params ...interface{}) (string, error) {
 
 	data := common.FromHex(XFSTOKENBin)
 	dataMethod := common.FromHex(TRANSFERFROM)
+	data = append(data, dataMethod...)
+	data = append(data, byteArgs...)
+
+	result := "0x" + hex.EncodeToString(data)
+	return result, nil
+}
+
+func (abi ABI) Transfer(params ...interface{}) (string, error) {
+	byteArgs, err := abi.PackArgs(TRANSFER, params...)
+	if err != nil {
+		return "", err
+	}
+	data := common.FromHex(XFSTOKENBin)
+	dataMethod := common.FromHex(TRANSFER)
 	data = append(data, dataMethod...)
 	data = append(data, byteArgs...)
 

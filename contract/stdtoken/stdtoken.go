@@ -359,6 +359,31 @@ func (stdtoken *StdToken) Approve(args reqcontract.StdTokenApproveArgs) (string,
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
+func (stdtoken *StdToken) Transfer(args reqcontract.StdTokenTransferArgs) (string, error) {
+	toAddr := common.StrB58ToAddress(args.TransferToAddress)
+	amount, ok := new(big.Int).SetString(args.TransferAmount, 10)
+	if !ok {
+		return "", fmt.Errorf("invalid Mint error")
+	}
+	packed, err := apis.GVA_ABI_STDTOKEN.Transfer(abi.NewAddress(toAddr), abi.NewUint256(amount))
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	tokenTransfer.To = stdtoken.ContractAddress
+	tokenTransfer.Data = packed
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.TransferFromAddressPriKey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
 func (stdtoken *StdToken) TransferFrom(args reqcontract.StdTokenTransferFromArgs) (string, error) {
 	fromAddr := common.StrB58ToAddress(args.TransferFromAddress)
 	toAddr := common.StrB58ToAddress(args.TransferToAddress)
@@ -374,7 +399,7 @@ func (stdtoken *StdToken) TransferFrom(args reqcontract.StdTokenTransferFromArgs
 
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = args.TransferToAddress
+	tokenTransfer.To = stdtoken.ContractAddress
 	tokenTransfer.Data = packed
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.TransferSpenderAddressPriKey, tokenTransfer)
 	if err != nil {

@@ -43,6 +43,12 @@ type StdTokenApproveArgs struct {
 	Amount                   string `json:"amount"`
 }
 
+type StdTokenTransferArgs struct {
+	TransferFromAddressPriKey string `json:"approve_from_address_prikey"`
+	TransferToAddress         string `json:"transfer_to_address"`
+	TransferAmount            string `json:"transfer_amount"`
+}
+
 // TransferFrom requset
 type StdTokenTransferFromArgs struct {
 	// BlockChain  string `json:"blockchain"`
