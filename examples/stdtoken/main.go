@@ -72,6 +72,12 @@ func main() {
 			Action:   Stdtoken_caddr,
 		},
 		{
+			Name:     "approve",
+			Usage:    "<spender> <amount> <fromprikey>",
+			Category: "arithmetic",
+			Action:   Stdtoken_Approve,
+		},
+		{
 			Name:     "transfer",
 			Usage:    "<to> <amount>",
 			Category: "arithmetic",
@@ -107,6 +113,7 @@ func Stdtoken_Create(c *cli.Context) error {
 	fmt.Println(code)
 	return nil
 }
+
 func Stdtoken_Deploy(c *cli.Context) error {
 	args := c.Args()
 
@@ -192,6 +199,25 @@ func Stdtoken_Transfer(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("txhahs:%v\n", txhash)
+	fmt.Printf("txhash:%v\n", txhash)
 	return nil
+}
+
+func Stdtoken_Approve(c *cli.Context) error {
+	args := c.Args()
+
+	if c.NArg() < 3 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	argsApprove := reqcontract.StdTokenApproveArgs{
+		ApproveSpenderAddress:    args.Get(0),
+		Amount:                   args.Get(1),
+		ApproveFromAddressPriKey: args.Get(2),
+	}
+	txhash, err := deafaultStdtoken.Approve(argsApprove)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("txhash:%v\n", txhash)
 }

@@ -136,6 +136,6 @@ func Bridge_TransferIn(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("txhahs:%v\n", txhash)
+	fmt.Printf("txhash:%v\n", txhash)
 	return nil
 }

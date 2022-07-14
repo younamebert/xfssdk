@@ -343,7 +343,7 @@ func (stdtoken *StdToken) Approve(args reqcontract.StdTokenApproveArgs) (string,
 
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = args.ApproveSpenderAddress
+	tokenTransfer.To = stdtoken.ContractAddress
 	tokenTransfer.Data = packed
 	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.ApproveFromAddressPriKey, tokenTransfer)
 	if err != nil {
