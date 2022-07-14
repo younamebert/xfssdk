@@ -55,7 +55,6 @@ func (stdtokenlocad *StdTokenLocal) DeployToken(args reqcontract.DeployTokenArgs
 	}
 
 	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
-	fmt.Println(transfer2Raw)
 	if err != nil {
 		return nil, "", err
 	}
