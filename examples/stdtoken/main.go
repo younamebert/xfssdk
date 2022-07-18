@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	Key              = "0x01018deb6aac861402b051b58dbea64ab26596e25588f73b5ea937fa1903d24cbdfc"
+	Key              = "0x0101e38d5d2bd08a46d234cf07ceca174137be31e421b4e58583f68685f90c04ce77"
 	DefaultAddr      = crypto.Prikey2Addr(Key)
 	deafaultStdtoken = &stdtoken.StdToken{
-		ContractAddress:      "fobxo9XmCufb7q72WoQ4Kgz3gRt7Visrz",
+		ContractAddress:      "a59Gj6e5JzeBvQY3urKr7E371h255yguP",
 		CreatorAddressPrikey: Key,
 	}
 	app           *cli.App
@@ -220,4 +220,5 @@ func Stdtoken_Approve(c *cli.Context) error {
 		return err
 	}
 	fmt.Printf("txhash:%v\n", txhash)
+	return nil
 }

@@ -166,7 +166,6 @@ func (stdtoken *StdToken) GetDecimals() (*big.Int, error) {
 		To:   stdtoken.ContractAddress,
 		Data: packed,
 	}
-
 	var result string
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
 		return nil, err
@@ -220,7 +219,7 @@ func (stdtoken *StdToken) BalanceOf(account_address string) (*big.Int, error) {
 		To:   stdtoken.ContractAddress,
 		Data: packed,
 	}
-
+	// fmt.Println()
 	var result string
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
 		return nil, err

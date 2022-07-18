@@ -21,6 +21,12 @@ type Events struct {
 	Args ArgsEvents `json:"args"`
 }
 
+type ArgsEvent struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type ArgsEvents []*ArgsEvent
 type ABI struct {
 	Events  map[string]*Events
 	Methods map[string]*Method

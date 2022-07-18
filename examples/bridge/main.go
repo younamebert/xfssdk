@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	BridgeKey           = "0x010170c10441b71cfdf7af3ed299151be8668c9c79f99ec68f8e34b2ee1151c46a80"
+	BridgeKey           = "0x0101a9de107c8fafe7fdb56ec18e328091403acdf990605d83396b86f0be5b0a931c"
 	DefaultBridgeAddr   = crypto.Prikey2Addr(BridgeKey)
 	deafaultBridgetoken = &bridge.Bridge{
-		Bankaddress:          "YyhP7nipqxj8eoUN6Lj1P4q8vdQ8mwgVX",
+		Bankaddress:          "",
 		CreatorAddressPrikey: BridgeKey,
 	}
 	app         *cli.App
