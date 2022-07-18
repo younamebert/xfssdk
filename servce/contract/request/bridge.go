@@ -1,9 +1,12 @@
 package reqcontract
 
+import "math/big"
+
 type BridgeArgs struct {
-	Name            string `json:"name"`
-	Symbol          string `json:"symbol"`
-	ContractAddress string `json:"ContractAddress"`
+	Name            string   `json:"name"`
+	Symbol          string   `json:"symbol"`
+	ContractAddress string   `json:"ContractAddress"`
+	ChainId         *big.Int `json:"chainId"`
 }
 
 type DeployBridgeArgs struct {

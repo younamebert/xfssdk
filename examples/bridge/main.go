@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/big"
 	"os"
 	"strconv"
 
@@ -18,7 +19,7 @@ var (
 	BridgeKey           = "0x0101a9de107c8fafe7fdb56ec18e328091403acdf990605d83396b86f0be5b0a931c"
 	DefaultBridgeAddr   = crypto.Prikey2Addr(BridgeKey)
 	deafaultBridgetoken = &bridge.Bridge{
-		Bankaddress:          "",
+		Bankaddress:          "Ux6t29iMyEmwExu6wNQKVnrqtMdFtFgYK",
 		CreatorAddressPrikey: BridgeKey,
 	}
 	app         *cli.App
@@ -40,7 +41,7 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:     "create",
-			Usage:    "create <name> <symbol> <caddrss>",
+			Usage:    "create <name> <symbol> <caddrss> <chainid>",
 			Category: "arithmetic",
 			Action:   Bridge_Create,
 		},
@@ -76,10 +77,12 @@ func Bridge_Create(c *cli.Context) error {
 		fmt.Println(c.App.Usage)
 		return nil
 	}
+	chainid, _ := new(big.Int).SetString(args.Get(3), 10)
 	argsCreate := &reqcontract.BridgeArgs{
 		Name:            args.Get(0),
 		Symbol:          args.Get(1),
 		ContractAddress: args.Get(2),
+		ChainId:         chainid,
 	}
 	code, err := bridgelocal.Create(argsCreate)
 	if err != nil {

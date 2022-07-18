@@ -19,7 +19,7 @@ import (
 type BridgeLocal struct{}
 
 func (bridgelocal *BridgeLocal) Create(args *reqcontract.BridgeArgs) (string, error) {
-	code, err := apis.GVA_ABI_BRIDGETOKEN.Create(abi.CTypeString(args.Name), abi.CTypeString(args.Symbol), abi.NewAddress(common.StrB58ToAddress(args.ContractAddress)))
+	code, err := apis.GVA_ABI_BRIDGETOKEN.Create(abi.CTypeString(args.Name), abi.CTypeString(args.Symbol), abi.NewAddress(common.StrB58ToAddress(args.ContractAddress)), abi.NewUint256(args.ChainId))
 	if err != nil {
 		return "", fmt.Errorf("an exception occurred of contract argument err:%v", err)
 	}
