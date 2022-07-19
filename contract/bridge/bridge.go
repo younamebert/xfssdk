@@ -80,7 +80,11 @@ func (bridge *Bridge) TransferIn(args reqcontract.BridgeTransferInArgs) (string,
 	if !ok {
 		return "", fmt.Errorf("invalid Mint error")
 	}
-	packed, err := apis.GVA_ABI_BRIDGETOKEN.TransferIn(abi.NewAddress(toAddr), abi.NewUint256(amount))
+	toChainId, ok := new(big.Int).SetString(args.TransferToChainId, 10)
+	if !ok {
+		return "", fmt.Errorf("invalid Mint error")
+	}
+	packed, err := apis.GVA_ABI_BRIDGETOKEN.TransferIn(abi.NewAddress(toAddr), abi.NewUint256(amount), abi.NewUint256(toChainId))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}

@@ -18,4 +18,11 @@ type BridgeTransferInArgs struct {
 	TransferFromAddressPriKey string `json:"approve_from_address_prikey"`
 	TransferToAddress         string `json:"transfer_to_address"`
 	TransferAmount            string `json:"transfer_amount"`
+	TransferToChainId         string `json:"transfer_to_chainid"`
 }
+
+// type BridgeTransferOutArgs struct {
+// 	TransferFromAddressPriKey string `json:"approve_from_address_prikey"`
+// 	TransferToAddress         string `json:"transfer_to_address"`
+// 	TransferAmount            string `json:"transfer_amount"`
+// }
