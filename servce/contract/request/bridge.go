@@ -16,13 +16,15 @@ type DeployBridgeArgs struct {
 
 type BridgeTransferInArgs struct {
 	TransferFromAddressPriKey string `json:"approve_from_address_prikey"`
-	TransferToAddress         string `json:"transfer_to_address"`
+	DepositorAddress          string `json:"depositor_address"`
+	TransferAmount            string `json:"transfer_amount"`
+	TransferFromChainId       string `json:"transfer_from_chainid"`
+}
+
+type BridgeTransferOutArgs struct {
+	TransferFromAddressPriKey string `json:"approve_from_address_prikey"`
+	TransferFromAddress       string `json:"transfer_From_address"` //可以是储户地址(或者是储户的授权地址)
+	TransferToAddress         string `json:"transfer_to_address"`   //其他链地址
 	TransferAmount            string `json:"transfer_amount"`
 	TransferToChainId         string `json:"transfer_to_chainid"`
 }
-
-// type BridgeTransferOutArgs struct {
-// 	TransferFromAddressPriKey string `json:"approve_from_address_prikey"`
-// 	TransferToAddress         string `json:"transfer_to_address"`
-// 	TransferAmount            string `json:"transfer_amount"`
-// }

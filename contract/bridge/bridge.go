@@ -75,7 +75,37 @@ type Bridge struct {
 }
 
 func (bridge *Bridge) TransferIn(args reqcontract.BridgeTransferInArgs) (string, error) {
-	toAddr := common.StrB58ToAddress(args.TransferToAddress)
+	toAddr := common.StrB58ToAddress(args.DepositorAddress)
+	amount, ok := new(big.Int).SetString(args.TransferAmount, 10)
+	if !ok {
+		return "", fmt.Errorf("invalid Mint error")
+	}
+	fromChainId, ok := new(big.Int).SetString(args.TransferFromChainId, 10)
+	if !ok {
+		return "", fmt.Errorf("invalid Mint error")
+	}
+	packed, err := apis.GVA_ABI_BRIDGETOKEN.TransferIn(abi.NewAddress(toAddr), abi.NewUint256(amount), abi.NewUint256(fromChainId))
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	tokenTransfer.To = bridge.Bankaddress
+	tokenTransfer.Data = packed
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.TransferFromAddressPriKey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
+func (bridge *Bridge) TransferOut(args reqcontract.BridgeTransferOutArgs) (string, error) {
+	depositorMint := common.StrB58ToAddress(args.TransferFromAddress) //储户地址或者储户授权地址
+	toAddress := abi.CTypeString(args.TransferToAddress)              //其他链地址
 	amount, ok := new(big.Int).SetString(args.TransferAmount, 10)
 	if !ok {
 		return "", fmt.Errorf("invalid Mint error")
@@ -84,7 +114,7 @@ func (bridge *Bridge) TransferIn(args reqcontract.BridgeTransferInArgs) (string,
 	if !ok {
 		return "", fmt.Errorf("invalid Mint error")
 	}
-	packed, err := apis.GVA_ABI_BRIDGETOKEN.TransferIn(abi.NewAddress(toAddr), abi.NewUint256(amount), abi.NewUint256(toChainId))
+	packed, err := apis.GVA_ABI_BRIDGETOKEN.TransferOut(abi.NewAddress(depositorMint), toAddress, abi.NewUint256(amount), abi.NewUint256(toChainId))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
