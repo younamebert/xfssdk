@@ -81,7 +81,7 @@ func (argevents ArgsEvents) Pack(args []*Event) ([]*Event, error) {
 
 			if strings.EqualFold(strings.ToLower(obj.Name), strings.ToLower(v.Name)) {
 				if obj.Type == "CTypeString" {
-					para := v.Value.(abi.CTypeString)
+					para := abi.CTypeString(vas)
 					event.Value = para.String()
 				} else if obj.Type == "CTypeUint8" {
 					big8, ok := big.NewInt(0).SetString(vas, 16)

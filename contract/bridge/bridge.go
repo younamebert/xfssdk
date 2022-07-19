@@ -104,8 +104,8 @@ func (bridge *Bridge) TransferIn(args reqcontract.BridgeTransferInArgs) (string,
 }
 
 func (bridge *Bridge) TransferOut(args reqcontract.BridgeTransferOutArgs) (string, error) {
-	depositorMint := common.StrB58ToAddress(args.TransferFromAddress) //储户地址或者储户授权地址
-	toAddress := abi.CTypeString(args.TransferToAddress)              //其他链地址
+	address := common.StrB58ToAddress(args.TransferAddress) //储户地址或者储户授权地址
+	toAddress := abi.CTypeString(args.TransferToAddress)    //其他链地址
 	amount, ok := new(big.Int).SetString(args.TransferAmount, 10)
 	if !ok {
 		return "", fmt.Errorf("invalid Mint error")
@@ -114,7 +114,7 @@ func (bridge *Bridge) TransferOut(args reqcontract.BridgeTransferOutArgs) (strin
 	if !ok {
 		return "", fmt.Errorf("invalid Mint error")
 	}
-	packed, err := apis.GVA_ABI_BRIDGETOKEN.TransferOut(abi.NewAddress(depositorMint), toAddress, abi.NewUint256(amount), abi.NewUint256(toChainId))
+	packed, err := apis.GVA_ABI_BRIDGETOKEN.TransferOut(abi.NewAddress(address), toAddress, abi.NewUint256(amount), abi.NewUint256(toChainId))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}

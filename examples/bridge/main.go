@@ -16,10 +16,10 @@ import (
 )
 
 var (
-	BridgeKey           = "0x0101a9de107c8fafe7fdb56ec18e328091403acdf990605d83396b86f0be5b0a931c"
+	BridgeKey           = "0x01010166b084b55d17e8619635cf9131e29bf732f9a05c2c8cc2a11ed9f8e3d4cf1b"
 	DefaultBridgeAddr   = crypto.Prikey2Addr(BridgeKey)
 	deafaultBridgetoken = &bridge.Bridge{
-		Bankaddress:          "Ux6t29iMyEmwExu6wNQKVnrqtMdFtFgYK",
+		Bankaddress:          "WfSHAkLLS7rn1n6Cev1Q5wj3wxMBAGJ66",
 		CreatorAddressPrikey: BridgeKey,
 	}
 	app         *cli.App
@@ -59,9 +59,15 @@ func main() {
 		},
 		{
 			Name:     "transferIn",
-			Usage:    "<to> <amount> <toChainId>",
+			Usage:    "<prikey> <to> <amount> <fromChainId>",
 			Category: "arithmetic",
 			Action:   Bridge_TransferIn,
+		},
+		{
+			Name:     "transferOut",
+			Usage:    "<prikey> <address> <toaddress> <amount> <toChainId>",
+			Category: "arithmetic",
+			Action:   Bridge_TransferOut,
 		},
 	}
 	err := app.Run(os.Args)
@@ -131,12 +137,29 @@ func Bridge_caddr(c *cli.Context) error {
 func Bridge_TransferIn(c *cli.Context) error {
 	args := c.Args()
 	argsTransfer := reqcontract.BridgeTransferInArgs{
-		TransferFromAddressPriKey: BridgeKey,
-		TransferToAddress:         args.Get(0),
-		TransferAmount:            args.Get(1),
-		TransferToChainId:         args.Get(2),
+		TransferFromAddressPriKey: args.Get(0),
+		DepositorAddress:          args.Get(1),
+		TransferAmount:            args.Get(2),
+		TransferFromChainId:       args.Get(3),
 	}
 	txhash, err := deafaultBridgetoken.TransferIn(argsTransfer)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("txhash:%v\n", txhash)
+	return nil
+}
+
+func Bridge_TransferOut(c *cli.Context) error {
+	args := c.Args()
+	argsTransfer := reqcontract.BridgeTransferOutArgs{
+		TransferFromAddressPriKey: args.Get(0),
+		TransferAddress:           args.Get(1),
+		TransferToAddress:         args.Get(2),
+		TransferAmount:            args.Get(3),
+		TransferToChainId:         args.Get(4),
+	}
+	txhash, err := deafaultBridgetoken.TransferOut(argsTransfer)
 	if err != nil {
 		return err
 	}
