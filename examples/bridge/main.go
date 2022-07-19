@@ -59,7 +59,7 @@ func main() {
 		},
 		{
 			Name:     "transferIn",
-			Usage:    "<to> <amount>",
+			Usage:    "<to> <amount> <toChainId>",
 			Category: "arithmetic",
 			Action:   Bridge_TransferIn,
 		},
@@ -134,6 +134,7 @@ func Bridge_TransferIn(c *cli.Context) error {
 		TransferFromAddressPriKey: BridgeKey,
 		TransferToAddress:         args.Get(0),
 		TransferAmount:            args.Get(1),
+		TransferToChainId:         args.Get(2),
 	}
 	txhash, err := deafaultBridgetoken.TransferIn(argsTransfer)
 	if err != nil {
