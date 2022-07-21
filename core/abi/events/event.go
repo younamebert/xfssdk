@@ -82,7 +82,11 @@ func (argevents ArgsEvents) Pack(args []*Event) ([]*Event, error) {
 			if strings.EqualFold(strings.ToLower(obj.Name), strings.ToLower(v.Name)) {
 				if obj.Type == "CTypeString" {
 					para := abi.CTypeString(vas)
-					event.Value = para.String()
+					pars, err := hex.DecodeString(para.String())
+					if err != nil {
+						return nil, fmt.Errorf("ctypestring to string:%v", v.Value)
+					}
+					event.Value = string(pars)
 				} else if obj.Type == "CTypeUint8" {
 					big8, ok := big.NewInt(0).SetString(vas, 16)
 					if !ok {

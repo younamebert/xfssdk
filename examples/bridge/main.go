@@ -134,6 +134,9 @@ func Bridge_caddr(c *cli.Context) error {
 	return nil
 }
 
+// tarranrawta
+// rawtaram => txs fromrawtran
+// vm.Call
 func Bridge_TransferIn(c *cli.Context) error {
 	args := c.Args()
 	argsTransfer := reqcontract.BridgeTransferInArgs{
