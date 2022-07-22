@@ -2,6 +2,7 @@ package apis
 
 import (
 	bridgeabi "github.com/younamebert/xfssdk/core/abi/bridge"
+	nftmarketabi "github.com/younamebert/xfssdk/core/abi/nftmarket"
 	nfttokenabi "github.com/younamebert/xfssdk/core/abi/nfttoken"
 	stdtokenabi "github.com/younamebert/xfssdk/core/abi/stdtoken"
 )
@@ -10,6 +11,7 @@ var (
 	GVA_ABI_STDTOKEN    stdtokenabi.ABI
 	GVA_ABI_NFTTOKEN    nfttokenabi.ABI
 	GVA_ABI_BRIDGETOKEN bridgeabi.ABI
+	GVA_ABI_NFTMARKET   nftmarketabi.ABI
 )
 
 // SetXFSClient set API global request client
@@ -31,5 +33,11 @@ func XFSABI() error {
 		return err
 	}
 	GVA_ABI_BRIDGETOKEN = bridgeabi
+
+	nftmarketabi, err := nftmarketabi.JSON(nftmarketabi.NFTMARKETABI)
+	if err != nil {
+		return err
+	}
+	GVA_ABI_NFTMARKET = nftmarketabi
 	return nil
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/younamebert/xfssdk/api"
 	"github.com/younamebert/xfssdk/config"
-	"github.com/younamebert/xfssdk/contract"
 	"github.com/younamebert/xfssdk/core"
 	"github.com/younamebert/xfssdk/core/apis"
 	"github.com/younamebert/xfssdk/global"
@@ -14,9 +13,8 @@ import (
 )
 
 type Handle struct {
-	Config         *config.HandleConfig
-	ApiMethod      *api.ApiMethod
-	ContractEngine *contract.ContractEngine
+	Config    *config.HandleConfig
+	ApiMethod *api.ApiMethod
 }
 
 // Default  create default handle object

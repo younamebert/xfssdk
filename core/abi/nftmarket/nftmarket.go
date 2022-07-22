@@ -1,0 +1,13 @@
+package nftmarket
+
+const (
+	CREATE       = "0x0000000000000000000000000000000000000000000000000000000000000000"
+	NFTMINT      = "0x15993f45e7ced4a8749de5a902a27e22d91b4ab1432d43e0b49a0e8f4ced1568"
+	NFTURL       = "0xd61ba1f7a1769be019a64b4215ee933ed249ec13ca549ece3d955735e5d6d056"
+	MFTMINTBATCH = "0xd94cca5ae4c905e7db2b46369898743c98e5d80da9d9d6b9c6dae8e8add9468c"
+	NFTURLBAtCh  = "0xe1dd0fd02c532db8ab55c3caa4bd660ddef16d9191d6720bbf99a0b08dac622f"
+	NFTBALANCEOF = "0x61945fbcd9ffbebe7dcf1ec99e8bd195e6b235295dbe5f84df2f8a2b72174e1c"
+)
+
+var NFTMARKETABI = `{"events":{"0xaba718007fe8194aa80a3b64f5251b05e8dbab073f347243c55f6656bf9cec77":{"name":"URIEvent","argc":2,"args":[{"name":"Amount","type":"CTypeString"},{"name":"Id","type":"CTypeUint256"}]},"0xb75542ef1aab22e8b8330f0870e7cf513147be0fd2272e033219c6451e7c11ba":{"name":"ApprovalForAllEvent","argc":3,"args":[{"name":"Owner","type":"CTypeAddress"},{"name":"Operator","type":"CTypeAddress"},{"name":"Approved","type":"CTypeBool"}]},"0xbc1a3e8d78fd8bb97a9317a05e2c1130879dcd3177e27889e598d086219b34ee":{"name":"TransferSingleEvent","argc":5,"args":[{"name":"Operator","type":"CTypeAddress"},{"name":"From","type":"CTypeAddress"},{"name":"To","type":"CTypeAddress"},{"name":"Id","type":"CTypeUint256"},{"name":"Amount","type":"CTypeUint256"}]},"0xfe88b70082c13d40d788186456892f6fec0d8901bb9cde834728ecc29165ac12":{"name":"TransferBatchEvent","argc":5,"args":[{"name":"Operator","type":"CTypeAddress"},{"name":"From","type":"CTypeAddress"},{"name":"To","type":"CTypeAddress"},{"name":"Ids","type":""},{"name":"Amounts","type":""}]}},"methods":{"0x0000000000000000000000000000000000000000000000000000000000000000":{"name":"Create","argc":0,"args":[],"return_type":"CTypeBool"},"0x15993f45e7ced4a8749de5a902a27e22d91b4ab1432d43e0b49a0e8f4ced1568":{"name":"NftMint","argc":3,"args":[{"name":"","type":"CTypeAddress"},{"name":"","type":"CTypeUint256"},{"name":"","type":"CTypeString"}],"return_type":"CTypeUint256"},"0x61945fbcd9ffbebe7dcf1ec99e8bd195e6b235295dbe5f84df2f8a2b72174e1c":{"name":"BalanceOf","argc":2,"args":[{"name":"","type":"CTypeAddress"},{"name":"","type":"CTypeUint256"}],"return_type":"CTypeUint256"},"0xd61ba1f7a1769be019a64b4215ee933ed249ec13ca549ece3d955735e5d6d056":{"name":"NFtUrl","argc":1,"args":[{"name":"","type":"CTypeUint256"}],"return_type":"CTypeString"},"0xd94cca5ae4c905e7db2b46369898743c98e5d80da9d9d6b9c6dae8e8add9468c":{"name":"NftMintBatch","argc":3,"args":[{"name":"","type":"CTypeAddress"},{"name":"","type":""},{"name":"","type":""}],"return_type":""},"0xe1dd0fd02c532db8ab55c3caa4bd660ddef16d9191d6720bbf99a0b08dac622f":{"name":"NFtUrlBatch","argc":1,"args":[{"name":"","type":""}],"return_type":""}}}`
+var NFTMARKETBIN = "0xd02304"
