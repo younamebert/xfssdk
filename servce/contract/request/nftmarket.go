@@ -14,3 +14,9 @@ type NFTMarketMintArgs struct {
 	Amount   *big.Int `json:"amount"`
 	TokenUrl string   `json:"token_uri"`
 }
+
+type NFTMarketMintBatchArgs struct {
+	Address   string     `json:"address"`
+	Amounts   []*big.Int `json:"amount"`
+	TokenUrls []string   `json:"token_uri"`
+}

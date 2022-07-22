@@ -1,6 +1,7 @@
 package nftmarket
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -81,6 +82,44 @@ func (nftmarket *NftMarket) Mint(args *reqcontract.NFTMarketMintArgs) (string, e
 	amount := abi.NewUint256(args.Amount)
 	tokenid := abi.CTypeString(args.TokenUrl)
 	packed, err := apis.GVA_ABI_NFTMARKET.Mint(abi.NewAddress(address), amount, tokenid)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	//初始化GAS和code
+	tokenTransfer.To = nftmarket.ContractAddress
+	tokenTransfer.Data = packed
+	// fmt.Printf()
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(nftmarket.CreatorAddressPrikey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("invalid mint err:%v", err)
+	}
+
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	fmt.Println(transfer2Raw)
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
+func (nftmarket *NftMarket) MintBatch(args *reqcontract.NFTMarketMintBatchArgs) (string, error) {
+	address := common.StrB58ToAddress(args.Address)
+
+	if len(args.Amounts) != len(args.TokenUrls) {
+		return "", errors.New("Amounts.Len != tokenurls.Len")
+	}
+	amounts := make([]abi.CTypeUint256, 0)
+	tokenUrls := make([]abi.CTypeString, 0)
+	for i := 0; i < len(args.TokenUrls); i++ {
+		amount := abi.NewUint256(args.Amounts[i])
+		amounts = append(amounts, amount)
+
+		tokenUrl := abi.CTypeString(args.TokenUrls[i])
+		tokenUrls = append(tokenUrls, tokenUrl)
+	}
+	packed, err := apis.GVA_ABI_NFTMARKET.Mint(abi.NewAddress(address), amounts, tokenUrls)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}

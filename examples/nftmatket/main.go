@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/younamebert/xfssdk"
 	"github.com/younamebert/xfssdk/common"
@@ -57,6 +58,12 @@ func main() {
 			Usage:    "<address> <amount> <tokenUri>",
 			Category: "arithmetic",
 			Action:   nftMarketToken_Mint,
+		},
+		{
+			Name:     "mintBatch",
+			Usage:    "<address> <amount> <tokenUri>",
+			Category: "arithmetic",
+			Action:   nftMarketToken_MintBatch,
 		},
 		{
 			Name:     "balanceof",
@@ -124,16 +131,6 @@ func nftMarketToken_Deploy(c *cli.Context) error {
 	return nil
 }
 
-// func Stdtoken_BalanceOf(c *cli.Context) error {
-// 	args := c.Args()
-// 	balance, err := deafaultStdtoken.BalanceOf(args.Get(0))
-// 	if err != nil {
-// 		return err
-// 	}
-// 	fmt.Printf("bal:%v\n", balance.String())
-// 	return nil
-// }
-
 func nftMarketToken_Mint(c *cli.Context) error {
 	args := c.Args()
 
@@ -156,6 +153,26 @@ func nftMarketToken_Mint(c *cli.Context) error {
 	return nil
 }
 
+func nftMarketToken_MintBatch(c *cli.Context) error {
+	args := c.Args()
+	// amount, err := strconv.Atoi(args.Get(1))
+	// if err != nil {
+	// 	return err
+	// }
+	tokenurls := strings.Split(args.Get(1), ",")
+	NftMarketClass := &reqcontract.NFTMarketMintBatchArgs{
+		Address:   args.Get(0),
+		Amount:    big.NewInt(int64(amount)),
+		TokenUrls: args.Get(2),
+	}
+
+	txhash, err := deafaultStdtoken.Mint(NftMarketClass)
+	if err != nil {
+		return err
+	}
+	fmt.Println(txhash)
+	return nil
+}
 func nftMarketToken_BalanceOf(c *cli.Context) error {
 	args := c.Args()
 
