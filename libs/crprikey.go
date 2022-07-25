@@ -56,3 +56,19 @@ func CheckWalletPriKey(key string) error {
 	}
 	return nil
 }
+
+func CreatePrikey() string {
+	key, _ := crypto.GenPrvKey()
+	return "0x" + hex.EncodeToString(crypto.DefaultEncodePrivateKey(key))
+}
+
+func DecodePrivateKey(keyEnc string) common.Address {
+	if keyEnc[0] == '0' && keyEnc[1] == 'x' {
+		keyEnc = keyEnc[2:]
+	} else {
+		return common.ZeroAddr
+	}
+	keyDer, _ := hex.DecodeString(keyEnc)
+	_, key, _ := crypto.DecodePrivateKey(keyDer)
+	return crypto.DefaultPubKey2Addr(key.PublicKey)
+}

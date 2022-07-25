@@ -163,7 +163,7 @@ func nftMarketToken_MintBatch(c *cli.Context) error {
 	NftMarketClass := &reqcontract.NFTMarketMintBatchArgs{
 		Address:   args.Get(0),
 		Amount:    big.NewInt(int64(amount)),
-		TokenUrls: args.Get(2),
+		TokenUrls: tokenurls,
 	}
 
 	txhash, err := deafaultStdtoken.Mint(NftMarketClass)
