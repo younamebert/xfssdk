@@ -58,3 +58,19 @@ func New(handleconf *config.HandleConfig, loggerconf *config.LoggerConfig) *Hand
 	handle.ApiMethod = api.NewApiMethod()
 	return handle
 }
+
+func SetupGLobal(link, reqLinkOutTime string, loggerconf *config.LoggerConfig) error {
+	cli := client.NewClient(link, reqLinkOutTime)
+	apis.SetXFSClient(cli)
+	if loggerconf == nil {
+		XFSLogger := core.NewXFSLogger(config.DefaultLoggerConfig())
+		logc := XFSLogger.Zap()
+		global.Set_GVA_LOG(logc)
+	}
+	if err := apis.XFSABI(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+		return nil
+	}
+	return nil
+}
