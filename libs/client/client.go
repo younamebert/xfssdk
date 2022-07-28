@@ -9,8 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/younamebert/xfssdk/global"
 )
 
 type Client struct {
@@ -46,7 +44,6 @@ func (cli *Client) CallMethod(id int, methodname string, params interface{}, out
 
 	timeDur, err := time.ParseDuration(cli.timeOut)
 	if err != nil {
-		global.GVA_LOG.Warn(err.Error())
 		return err
 	}
 
@@ -61,13 +58,12 @@ func (cli *Client) CallMethod(id int, methodname string, params interface{}, out
 
 	reqStr, err := json.Marshal(req)
 	if err != nil {
-		global.GVA_LOG.Warn(err.Error())
 		return err
 	}
 
 	result, err := client.Post(cli.hostUrl, "application/json;charset=utf-8", bytes.NewBuffer(reqStr))
 	if err != nil {
-		global.GVA_LOG.Warn(err.Error())
+
 		return err
 	}
 	defer result.Body.Close()
@@ -77,12 +73,12 @@ func (cli *Client) CallMethod(id int, methodname string, params interface{}, out
 
 	content, err := ioutil.ReadAll(result.Body)
 	if err != nil {
-		global.GVA_LOG.Warn(err.Error())
+
 		return err
 	}
 
 	if err := json.Unmarshal(content, &resp); err != nil {
-		global.GVA_LOG.Warn(err.Error())
+
 		return err
 	}
 
@@ -90,7 +86,6 @@ func (cli *Client) CallMethod(id int, methodname string, params interface{}, out
 
 	bsErr, err := json.Marshal(resp["error"])
 	if err != nil {
-		global.GVA_LOG.Warn(err.Error())
 		return err
 	}
 

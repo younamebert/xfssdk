@@ -6,9 +6,7 @@ import (
 
 	"github.com/younamebert/xfssdk/api"
 	"github.com/younamebert/xfssdk/config"
-	"github.com/younamebert/xfssdk/core"
 	"github.com/younamebert/xfssdk/core/apis"
-	"github.com/younamebert/xfssdk/global"
 	"github.com/younamebert/xfssdk/libs/client"
 )
 
@@ -25,10 +23,6 @@ func Default() *Handle {
 	}
 	cli := client.NewClient(handle.Config.NodeLink, handle.Config.NodeLinkOutTime)
 	apis.SetXFSClient(cli)
-
-	XFSLogger := core.NewXFSLogger(config.DefaultLoggerConfig())
-	logc := XFSLogger.Zap()
-	global.Set_GVA_LOG(logc)
 	// Initialize the ABI object
 	if err := apis.XFSABI(); err != nil {
 		fmt.Println(err)
@@ -39,15 +33,12 @@ func Default() *Handle {
 }
 
 // New adopt handleconfig and loggerconfig create handle object
-func New(handleconf *config.HandleConfig, loggerconf *config.LoggerConfig) *Handle {
+func New(handleconf *config.HandleConfig) *Handle {
 	handle := new(Handle)
-	handle.Config = config.NewHandleConfig(handleconf, loggerconf)
+	handle.Config = config.NewHandleConfig(handleconf)
 	cli := client.NewClient(handle.Config.NodeLink, handle.Config.NodeLinkOutTime)
 	apis.SetXFSClient(cli)
 
-	XFSLogger := core.NewXFSLogger(handle.Config.Logger)
-	logc := XFSLogger.Zap()
-	global.Set_GVA_LOG(logc)
 	// Initialize the ABI object
 	if err := apis.XFSABI(); err != nil {
 		fmt.Println(err)
@@ -59,14 +50,9 @@ func New(handleconf *config.HandleConfig, loggerconf *config.LoggerConfig) *Hand
 	return handle
 }
 
-func SetupGLobal(link, reqLinkOutTime string, loggerconf *config.LoggerConfig) error {
+func SetupGLobal(link, reqLinkOutTime string) error {
 	cli := client.NewClient(link, reqLinkOutTime)
 	apis.SetXFSClient(cli)
-	if loggerconf == nil {
-		XFSLogger := core.NewXFSLogger(config.DefaultLoggerConfig())
-		logc := XFSLogger.Zap()
-		global.Set_GVA_LOG(logc)
-	}
 	if err := apis.XFSABI(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

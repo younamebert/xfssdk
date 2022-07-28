@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	Key              = "0x010121da558c0353480d361a38d9349aa3197a2c42c3dba6eac04646ed360e4c7800"
+	Key              = "0x01010e7d5592d6b4f474ad0b43b2ab77755e9ea6f1cd325e217d78dd57ca9605c636"
 	DefaultAddr      = crypto.Prikey2Addr(Key)
 	deafaultStdtoken = &stdtoken.StdToken{
-		ContractAddress:      "ZB141W9myGuUi8pkpmz6gg1rwUhWL5ajW",
+		ContractAddress:      "cvsKS3LhJy5sFB62PhBN3HCje8EyzwDpV",
 		CreatorAddressPrikey: Key,
 	}
 	app           *cli.App

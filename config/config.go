@@ -13,7 +13,7 @@ type HandleConfig struct {
 	Logger          *LoggerConfig
 }
 
-func NewHandleConfig(handleconfig *HandleConfig, logConf *LoggerConfig) *HandleConfig {
+func NewHandleConfig(handleconfig *HandleConfig) *HandleConfig {
 	config := DefaultHandleConfig()
 
 	if handleconfig.Networkid != 0 {
@@ -32,8 +32,6 @@ func NewHandleConfig(handleconfig *HandleConfig, logConf *LoggerConfig) *HandleC
 			config.SetNodeLinkOutTime(handleconfig.NodeLinkOutTime)
 		}
 	}
-
-	config.SetLogger(logConf)
 	return config
 }
 
@@ -45,10 +43,6 @@ func DefaultHandleConfig() *HandleConfig {
 		NodeLinkOutTime: "5s",
 		Logger:          DefaultLoggerConfig(),
 	}
-}
-
-func (handle *HandleConfig) SetLogger(logger *LoggerConfig) {
-	handle.Logger = NewLoggerConfig(logger)
 }
 
 func (handle *HandleConfig) SetNetworkid(networkid uint32) {
@@ -96,73 +90,4 @@ func DefaultLoggerConfig() *LoggerConfig {
 		StacktraceKey: "stacktrace",
 		LogInConsole:  true,
 	}
-}
-
-func NewLoggerConfig(logConfig *LoggerConfig) *LoggerConfig {
-	loggerconfig := DefaultLoggerConfig()
-
-	if logConfig.Level != "" {
-		loggerconfig.SetLevel(logConfig.Level)
-	}
-
-	if logConfig.Format != "" {
-		loggerconfig.SetFormat(logConfig.Format)
-	}
-
-	if logConfig.Prefix != "" {
-		loggerconfig.SetPrefix(logConfig.Prefix)
-	}
-
-	if logConfig.Director != "" {
-		loggerconfig.SetDirector(logConfig.Director)
-	}
-
-	if logConfig.ShowLine != loggerconfig.ShowLine {
-		loggerconfig.SetShowLine(logConfig.ShowLine)
-	}
-
-	if logConfig.EncodeLevel != "" {
-		loggerconfig.SetEncodeLevel(logConfig.EncodeLevel)
-	}
-
-	if logConfig.StacktraceKey != "" {
-		loggerconfig.SetStacktraceKey(logConfig.StacktraceKey)
-	}
-
-	if logConfig.LogInConsole != loggerconfig.LogInConsole {
-		loggerconfig.SetLogInConsole(loggerconfig.LogInConsole)
-	}
-	return loggerconfig
-}
-
-func (logconf *LoggerConfig) SetLevel(level string) {
-	logconf.Level = level
-}
-
-func (logconf *LoggerConfig) SetFormat(format string) {
-	logconf.Format = format
-}
-
-func (logconf *LoggerConfig) SetPrefix(prifix string) {
-	logconf.Prefix = prifix
-}
-
-func (logconf *LoggerConfig) SetDirector(director string) {
-	logconf.Director = director
-}
-
-func (logconf *LoggerConfig) SetShowLine(showline bool) {
-	logconf.ShowLine = showline
-}
-
-func (logconf *LoggerConfig) SetEncodeLevel(encodeLevel string) {
-	logconf.EncodeLevel = encodeLevel
-}
-
-func (logconf *LoggerConfig) SetStacktraceKey(stacktracekey string) {
-	logconf.StacktraceKey = stacktracekey
-}
-
-func (logconf *LoggerConfig) SetLogInConsole(loginconsole bool) {
-	logconf.LogInConsole = loginconsole
 }
