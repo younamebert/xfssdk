@@ -192,7 +192,6 @@ func (stdtoken *StdToken) GetTotalSupply() (*big.Int, error) {
 		To:   stdtoken.ContractAddress,
 		Data: packed,
 	}
-
 	var result string
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
 		return nil, err
@@ -366,6 +365,20 @@ func (stdtoken *StdToken) Transfer(args reqcontract.StdTokenTransferArgs) (strin
 	packed, err := apis.GVA_ABI_STDTOKEN.Transfer(abi.NewAddress(toAddr), abi.NewUint256(amount))
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+
+	transferFrom, err := libs.StrKey2Address(args.TransferFromAddressPriKey)
+	if err != nil {
+		return "", fmt.Errorf("StrKey2Address %v err:%v", args.TransferFromAddressPriKey, err)
+	}
+	req := contract.VMCallData{
+		From: transferFrom.B58String(),
+		To:   stdtoken.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
 	}
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	tokenTransfer.To = stdtoken.ContractAddress
