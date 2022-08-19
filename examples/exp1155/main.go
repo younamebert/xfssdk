@@ -10,7 +10,7 @@ import (
 
 	"github.com/younamebert/xfssdk"
 	"github.com/younamebert/xfssdk/common"
-	"github.com/younamebert/xfssdk/contract/nftmarket"
+	"github.com/younamebert/xfssdk/contract/exp1155"
 	"github.com/younamebert/xfssdk/crypto"
 	reqcontract "github.com/younamebert/xfssdk/servce/contract/request"
 	"gopkg.in/urfave/cli.v1"
@@ -19,13 +19,13 @@ import (
 var (
 	Key              = "0x0101da503ac2fe8afa56ab4f6ac3443c1c8051e02d67bd7670c8d86a5e9f42c8c58d"
 	DefaultAddr      = crypto.Prikey2Addr(Key)
-	deafaultStdtoken = &nftmarket.NftMarket{
+	deafaultStdtoken = &exp1155.Exp1155{
 		ContractAddress:      "bZBJwCVZNvtnZ6MQRhoDy54EJPzTo8czc",
 		CreatorAddressPrikey: Key,
 	}
-	app            *cli.App
-	handle         = xfssdk.Default()
-	nftmarketLocal = new(nftmarket.NftMarketLocal)
+	app          *cli.App
+	handle       = xfssdk.Default()
+	exp1155Local = new(exp1155.Exp1155Local)
 )
 
 // var app = cli.NewApp()
@@ -45,31 +45,31 @@ func main() {
 			// Aliases:  []string{"create"},
 			Usage:    "create",
 			Category: "arithmetic",
-			Action:   nftMarketToken_Create,
+			Action:   exp1155Token_Create,
 		},
 		{
 			Name:     "deploy",
 			Usage:    "deploy <code> <addrprikey>",
 			Category: "arithmetic",
-			Action:   nftMarketToken_Deploy,
+			Action:   exp1155Token_Deploy,
 		},
 		{
 			Name:     "mint",
-			Usage:    "<address> <amount> <tokenUri>",
+			Usage:    "<address> <tokenurl>",
 			Category: "arithmetic",
-			Action:   nftMarketToken_Mint,
+			Action:   exp1155Token_Mint,
 		},
 		{
 			Name:     "mintBatch",
 			Usage:    "<address> <amount> <tokenUri>",
 			Category: "arithmetic",
-			Action:   nftMarketToken_MintBatch,
+			Action:   exp1155Token_MintBatch,
 		},
 		{
 			Name:     "balanceof",
 			Usage:    "<address> <tokenid>",
 			Category: "arithmetic",
-			Action:   nftMarketToken_BalanceOf,
+			Action:   exp1155Token_BalanceOf,
 		},
 		{
 			Name:     "caddr",
@@ -96,10 +96,9 @@ func main() {
 	}
 }
 
-func nftMarketToken_Create(c *cli.Context) error {
-	argsCreate := new(reqcontract.NftMarketArgs)
-
-	code, err := nftmarketLocal.Create(argsCreate)
+func exp1155Token_Create(c *cli.Context) error {
+	argsCreate := new(reqcontract.Exp1155CreateArgs)
+	code, err := exp1155Local.Create(argsCreate)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -109,7 +108,7 @@ func nftMarketToken_Create(c *cli.Context) error {
 	return nil
 }
 
-func nftMarketToken_Deploy(c *cli.Context) error {
+func exp1155Token_Deploy(c *cli.Context) error {
 	args := c.Args()
 
 	if c.NArg() < 1 {
@@ -117,11 +116,11 @@ func nftMarketToken_Deploy(c *cli.Context) error {
 		return nil
 	}
 
-	argsDeploy := reqcontract.DeployNftMarketArgs{
-		Code:       args.Get(0),
-		Addresskey: Key,
+	argsDeploy := reqcontract.Exp1155DeployArgs{
+		Code:    args.Get(0),
+		Privkey: Key,
 	}
-	_, txhash, err := nftmarketLocal.Deploy(argsDeploy)
+	_, txhash, err := exp1155Local.Deploy(argsDeploy)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -131,21 +130,19 @@ func nftMarketToken_Deploy(c *cli.Context) error {
 	return nil
 }
 
-func nftMarketToken_Mint(c *cli.Context) error {
+func exp1155Token_Mint(c *cli.Context) error {
 	args := c.Args()
 
-	amount, err := strconv.Atoi(args.Get(1))
-	if err != nil {
-		return err
+	if c.NArg() < 2 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	Exp1155Class := &reqcontract.Exp1155MintArgs{
+		Recipient: args.Get(0),
+		Tokenurl:  args.Get(1),
 	}
 
-	NftMarketClass := &reqcontract.NFTMarketMintArgs{
-		Address:  args.Get(0),
-		Amount:   big.NewInt(int64(amount)),
-		TokenUrl: args.Get(2),
-	}
-
-	txhash, err := deafaultStdtoken.Mint(NftMarketClass)
+	txhash, err := deafaultStdtoken.Mint(Exp1155Class)
 	if err != nil {
 		return err
 	}
@@ -153,27 +150,27 @@ func nftMarketToken_Mint(c *cli.Context) error {
 	return nil
 }
 
-func nftMarketToken_MintBatch(c *cli.Context) error {
+func exp1155Token_MintBatch(c *cli.Context) error {
 	args := c.Args()
 	// amount, err := strconv.Atoi(args.Get(1))
 	// if err != nil {
 	// 	return err
 	// }
 	tokenurls := strings.Split(args.Get(1), ",")
-	NftMarketClass := &reqcontract.NFTMarketMintBatchArgs{
+	Exp1155Class := &reqcontract.NFTMarketMintBatchArgs{
 		Address:   args.Get(0),
 		Amount:    big.NewInt(int64(amount)),
 		TokenUrls: tokenurls,
 	}
 
-	txhash, err := deafaultStdtoken.Mint(NftMarketClass)
+	txhash, err := deafaultStdtoken.Mint(Exp1155Class)
 	if err != nil {
 		return err
 	}
 	fmt.Println(txhash)
 	return nil
 }
-func nftMarketToken_BalanceOf(c *cli.Context) error {
+func exp1155Token_BalanceOf(c *cli.Context) error {
 	args := c.Args()
 
 	id, err := strconv.Atoi(args.Get(1))

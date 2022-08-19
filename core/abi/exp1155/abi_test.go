@@ -1,4 +1,4 @@
-package nftmarket
+package exp1155
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func Test_JSON(t *testing.T) {
-	objClass, _ := JSON(NFTMARKETABI)
+	objClass, _ := JSON(EXP1155ABI)
 	bs, _ := common.MarshalIndent(objClass.Events)
 	fmt.Println(string(bs))
 }

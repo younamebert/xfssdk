@@ -1,4 +1,4 @@
-package nftmarket
+package exp1155
 
 import (
 	"errors"
@@ -18,27 +18,27 @@ import (
 	reqtransfer "github.com/younamebert/xfssdk/servce/transfer/request"
 )
 
-type NftMarketLocal struct{}
+type Exp1155Local struct{}
 
-func (nftmarketlocal *NftMarketLocal) Create(args *reqcontract.NftMarketArgs) (string, error) {
-	code, err := apis.GVA_ABI_NFTMARKET.Create()
+func (exp1155local *Exp1155Local) Create(args *reqcontract.Exp1155CreateArgs) (string, error) {
+	code, err := apis.GVA_ABI_EXP1155.Create()
 	if err != nil {
 		return "", fmt.Errorf("an exception occurred of contract argument err:%v", err)
 	}
 	return code, err
 }
 
-func (nftmarketlocal *NftMarketLocal) Deploy(args reqcontract.DeployNftMarketArgs) (*NftMarket, string, error) {
+func (exp1155local *Exp1155Local) Deploy(args reqcontract.Exp1155DeployArgs) (*Exp1155, string, error) {
 	//创建合约交易
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	tokenTransfer.Data = args.Code
 
-	address, err := libs.StrKey2Address(args.Addresskey)
+	address, err := libs.StrKey2Address(args.Privkey)
 	if err != nil {
 		return nil, "", err
 	}
 	//签名交易
-	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Addresskey, tokenTransfer)
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Privkey, tokenTransfer)
 	if err != nil {
 		return nil, "", err
 	}
@@ -64,33 +64,46 @@ func (nftmarketlocal *NftMarketLocal) Deploy(args reqcontract.DeployNftMarketArg
 	}
 	caddr := crypto.CreateAddress(fromAddressHash, nonce)
 	//返回交易哈希和合约地址
-	result := &NftMarket{
+	result := &Exp1155{
 		ContractAddress:      caddr.B58String(), //合约地址
-		CreatorAddressPrikey: args.Addresskey,   //创建人私钥
+		CreatorAddressPrikey: args.Privkey,      //创建人私钥
 	}
 	return result, txhash, nil
 }
 
-type NftMarket struct {
+type Exp1155 struct {
 	ContractAddress      string //合约地址
 	CreatorAddressPrikey string //创建人私钥
 }
 
-func (nftmarket *NftMarket) Mint(args *reqcontract.NFTMarketMintArgs) (string, error) {
+func (exp1155 *Exp1155) Mint(args *reqcontract.Exp1155MintArgs) (string, error) {
 
-	address := common.StrB58ToAddress(args.Address)
-	amount := abi.NewUint256(args.Amount)
-	tokenid := abi.CTypeString(args.TokenUrl)
-	packed, err := apis.GVA_ABI_NFTMARKET.Mint(abi.NewAddress(address), amount, tokenid)
+	address := common.StrB58ToAddress(args.Recipient)
+	tokenid := abi.CTypeString(args.Tokenurl)
+	packed, err := apis.GVA_ABI_EXP1155.Mint(abi.NewAddress(address), tokenid)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
+
+	from, err := libs.StrKey2Address(exp1155.CreatorAddressPrikey)
+	if err != nil {
+		return "", err
+	}
+	req := contract.VMCallData{
+		From: from.B58String(),
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result interface{}
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = nftmarket.ContractAddress
+	tokenTransfer.To = exp1155.ContractAddress
 	tokenTransfer.Data = packed
 	// fmt.Printf()
-	stdtokentransfer, err := transfer.EnCodeRawTransaction(nftmarket.CreatorAddressPrikey, tokenTransfer)
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(exp1155.CreatorAddressPrikey, tokenTransfer)
 	if err != nil {
 		return "", fmt.Errorf("invalid mint err:%v", err)
 	}
@@ -104,7 +117,7 @@ func (nftmarket *NftMarket) Mint(args *reqcontract.NFTMarketMintArgs) (string, e
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nftmarket *NftMarket) MintBatch(args *reqcontract.NFTMarketMintBatchArgs) (string, error) {
+func (exp1155 *Exp1155) MintBatch(args *reqcontract.Exp1155MintBatchArgs) (string, error) {
 	address := common.StrB58ToAddress(args.Address)
 
 	if len(args.Amounts) != len(args.TokenUrls) {
@@ -119,16 +132,16 @@ func (nftmarket *NftMarket) MintBatch(args *reqcontract.NFTMarketMintBatchArgs) 
 		tokenUrl := abi.CTypeString(args.TokenUrls[i])
 		tokenUrls = append(tokenUrls, tokenUrl)
 	}
-	packed, err := apis.GVA_ABI_NFTMARKET.Mint(abi.NewAddress(address), amounts, tokenUrls)
+	packed, err := apis.GVA_ABI_EXP1155.Mint(abi.NewAddress(address), amounts, tokenUrls)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
-	tokenTransfer.To = nftmarket.ContractAddress
+	tokenTransfer.To = exp1155.ContractAddress
 	tokenTransfer.Data = packed
 	// fmt.Printf()
-	stdtokentransfer, err := transfer.EnCodeRawTransaction(nftmarket.CreatorAddressPrikey, tokenTransfer)
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(exp1155.CreatorAddressPrikey, tokenTransfer)
 	if err != nil {
 		return "", fmt.Errorf("invalid mint err:%v", err)
 	}
@@ -142,17 +155,17 @@ func (nftmarket *NftMarket) MintBatch(args *reqcontract.NFTMarketMintBatchArgs) 
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (nftmarket *NftMarket) BalanceOf(account_address string, tokenid *big.Int) (*big.Int, error) {
+func (exp1155 *Exp1155) BalanceOf(account_address string, tokenid *big.Int) (*big.Int, error) {
 	accoutAddr := common.StrB58ToAddress(account_address)
 	cTypeAddr := abi.NewAddress(accoutAddr)
 	id := abi.NewUint256(tokenid)
-	packed, err := apis.GVA_ABI_NFTMARKET.BalanceOf(cTypeAddr, id)
+	packed, err := apis.GVA_ABI_EXP1155.BalanceOf(cTypeAddr, id)
 	if err != nil {
 		return nil, fmt.Errorf("no connection established in service err:%v", err)
 	}
 
 	req := contract.VMCallData{
-		To:   nftmarket.ContractAddress,
+		To:   exp1155.ContractAddress,
 		Data: packed,
 	}
 	var result string
