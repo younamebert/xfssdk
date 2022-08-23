@@ -1,10 +1,12 @@
 package exp1155
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 
 	"github.com/younamebert/xfssdk/common"
 	"github.com/younamebert/xfssdk/common/ahash"
@@ -80,6 +82,8 @@ func (exp1155 *Exp1155) Mint(args *reqcontract.Exp1155MintArgs) (string, error) 
 
 	address := common.StrB58ToAddress(args.Recipient)
 	tokenid := abi.CTypeString(args.Tokenurl)
+
+	fmt.Println(address.B58String(), tokenid.String())
 	packed, err := apis.GVA_ABI_EXP1155.Mint(abi.NewAddress(address), tokenid)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
@@ -123,18 +127,25 @@ func (exp1155 *Exp1155) MintBatch(args *reqcontract.Exp1155MintBatchArgs) (strin
 	if len(args.Amounts) != len(args.TokenUrls) {
 		return "", errors.New("Amounts.Len != tokenurls.Len")
 	}
-	amounts := make([]abi.CTypeUint256, 0)
-	tokenUrls := make([]abi.CTypeString, 0)
-	for i := 0; i < len(args.TokenUrls); i++ {
-		amount := abi.NewUint256(args.Amounts[i])
-		amounts = append(amounts, amount)
-
-		tokenUrl := abi.CTypeString(args.TokenUrls[i])
-		tokenUrls = append(tokenUrls, tokenUrl)
-	}
-	packed, err := apis.GVA_ABI_EXP1155.Mint(abi.NewAddress(address), amounts, tokenUrls)
+	var amounts, tokenUrls abi.CTypeString
+	amounts = abi.CTypeString(strings.Join(args.Amounts, ","))
+	tokenUrls = abi.CTypeString(strings.Join(args.TokenUrls, ","))
+	packed, err := apis.GVA_ABI_EXP1155.MintBatch(abi.NewAddress(address), tokenUrls, amounts)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	from, err := libs.StrKey2Address(exp1155.CreatorAddressPrikey)
+	if err != nil {
+		return "", err
+	}
+	req := contract.VMCallData{
+		From: from.B58String(),
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result []byte
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
 	}
 	tokenTransfer := new(reqtransfer.StringRawTransaction)
 	//初始化GAS和code
@@ -155,27 +166,74 @@ func (exp1155 *Exp1155) MintBatch(args *reqcontract.Exp1155MintBatchArgs) (strin
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (exp1155 *Exp1155) BalanceOf(account_address string, tokenid *big.Int) (*big.Int, error) {
+func (exp1155 *Exp1155) BalanceOf(account_address string, tokenid *big.Int) (string, error) {
 	accoutAddr := common.StrB58ToAddress(account_address)
 	cTypeAddr := abi.NewAddress(accoutAddr)
 	id := abi.NewUint256(tokenid)
 	packed, err := apis.GVA_ABI_EXP1155.BalanceOf(cTypeAddr, id)
 	if err != nil {
-		return nil, fmt.Errorf("no connection established in service err:%v", err)
+		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
-
 	req := contract.VMCallData{
 		To:   exp1155.ContractAddress,
 		Data: packed,
 	}
-	var result string
+	var result interface{}
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
-		return nil, err
+		return "", err
 	}
-	byteResult, err := common.HexToBytes(result)
+	if result == nil {
+		return "", nil
+	}
+	tuple, err := abi.DncodeCTypeTuple(result.(string))
 	if err != nil {
-		return big.NewInt(0), err
+		return "", err
 	}
-	bigResult := big.NewInt(0).SetBytes(byteResult)
-	return bigResult, nil
+	bs, err := json.Marshal(tuple)
+	if err != nil {
+		return "", err
+	}
+	return string(bs), nil
 }
+
+func (exp1155 *Exp1155) BalanceOfBatch(accounts, ids []string) (*big.Int, string, error) {
+	accoutsCtypes := abi.CTypeString(strings.Join(accounts, ","))
+	idsCtypes := abi.CTypeString(strings.Join(ids, ","))
+
+	packed, err := apis.GVA_ABI_EXP1155.BalanceOfBatch(accoutsCtypes, idsCtypes)
+	if err != nil {
+		return nil, "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	req := contract.VMCallData{
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result interface{}
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return nil, "", err
+	}
+	if result == nil {
+		return nil, "", nil
+	}
+	tuple, err := abi.DncodeCTypeTuple(result.(string))
+	if err != nil {
+		return nil, "", err
+	}
+	bs, _ := json.MarshalIndent(tuple, " ", " ")
+	fmt.Println(string(bs))
+	// if result == nil {
+	// 	return nil, "", nil
+	// }
+	// tuple, err := abi.DncodeCTypeTuple(result.(string))
+	// if err != nil {
+	// 	return nil, "", err
+	// }
+	// newAmount := tuple["CTypeUint256"].(string)
+	// amounts, _ := big.NewInt(0).SetString(newAmount, 0)
+	// tokenurl := tuple["CTypeString"].(string)
+	return nil, "", nil
+}
+
+// func (exp1155 *Exp1155) TransferFrom() (string, error) {
+
+// }

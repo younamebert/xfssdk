@@ -1,14 +1,11 @@
 package client
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"time"
+
+	"github.com/go-resty/resty/v2"
 )
 
 type Client struct {
@@ -26,11 +23,9 @@ type jsonRPCReq struct {
 type jsonRPCResp struct {
 	JSONRPC string      `json:"jsonrpc"`
 	Result  interface{} `json:"result"`
-	Error   *RPCError   `json:"error"`
+	Error   rpcError    `json:"error"`
 	ID      int         `json:"id"`
 }
-
-var ErrtoSliceStr = errors.New("json: cannot unmarshal string into Go value of type []string")
 
 func NewClient(url, timeOut string) *Client {
 	return &Client{
@@ -41,82 +36,45 @@ func NewClient(url, timeOut string) *Client {
 
 // CallMethod executes a JSON-RPC call with the given psrameters,which is important to the rpc server.
 func (cli *Client) CallMethod(id int, methodname string, params interface{}, out interface{}) error {
+	client := resty.New()
 
 	timeDur, err := time.ParseDuration(cli.timeOut)
 	if err != nil {
 		return err
 	}
-
-	client := &http.Client{Timeout: timeDur}
-
+	client = client.SetTimeout(timeDur)
 	req := &jsonRPCReq{
 		JsonRPC: "2.0",
 		ID:      id,
 		Method:  methodname,
 		Params:  params,
 	}
-
-	reqStr, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-
-	result, err := client.Post(cli.hostUrl, "application/json;charset=utf-8", bytes.NewBuffer(reqStr))
-	if err != nil {
-
-		return err
-	}
-	defer result.Body.Close()
 	// The result must be a pointer so that response json can unmarshal into it.
-
-	resp := make(map[string]interface{})
-
-	content, err := ioutil.ReadAll(result.Body)
-	if err != nil {
-
-		return err
-	}
-
-	if err := json.Unmarshal(content, &resp); err != nil {
-
-		return err
-	}
-
-	// logrus.Infof("methodname:%v params:%v resp:%v\n", methodname, params, string(content))
-
-	bsErr, err := json.Marshal(resp["error"])
+	var resp *jsonRPCResp = nil
+	r, err := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(req).
+		SetResult(&resp). // or SetResult(AuthSuccess{}).
+		Post(cli.hostUrl)
 	if err != nil {
 		return err
 	}
-
-	if string(bsErr) != "null" {
-		return fmt.Errorf(string(bsErr))
+	if resp == nil {
+		return nil
+	}
+	e := resp.Error.Message
+	if e != "" {
+		return fmt.Errorf(e)
 	}
 
-	bs, err := json.Marshal(resp["result"])
+	js, err := json.Marshal(resp.Result)
 	if err != nil {
 		return err
 	}
-
-	err = json.Unmarshal(bs, out)
+	err = json.Unmarshal(js, out)
 	if err != nil {
-		if err.Error() == ErrtoSliceStr.Error() {
-			sentences := []string{}
-			scanner := bufio.NewScanner(bytes.NewBuffer(bs))
-			for scanner.Scan() {
-				sentences = append(sentences, scanner.Text())
-			}
-			bs, err := json.Marshal(sentences)
-			if err != nil {
-				return err
-			}
-			if err := json.Unmarshal(bs, out); err != nil {
-				return err
-			}
-			return nil
-		}
 		return err
 	}
-
+	_ = r
 	return nil
 }

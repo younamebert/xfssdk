@@ -24,9 +24,9 @@ type Exp1155MintArgs struct {
 }
 
 type Exp1155MintBatchArgs struct {
-	Address   string     `json:"address"`
-	Amounts   []*big.Int `json:"amount"`
-	TokenUrls []string   `json:"token_url"`
+	Address   string   `json:"address"`
+	Amounts   []string `json:"amount"`
+	TokenUrls []string `json:"token_url"`
 }
 
 type Exp1155BalanceOfArgs struct {

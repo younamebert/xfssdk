@@ -34,7 +34,7 @@ func XFSABI() error {
 	}
 	GVA_ABI_BRIDGETOKEN = bridgeabi
 
-	exp1155abi, err := exp1155abi.JSON(exp1155abi.NFTMARKETABI)
+	exp1155abi, err := exp1155abi.JSON(exp1155abi.EXP1155ABI)
 	if err != nil {
 		return err
 	}

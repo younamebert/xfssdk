@@ -3,7 +3,10 @@ package abi
 import (
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/younamebert/xfssdk/common"
 )
@@ -16,11 +19,24 @@ type CTypeUint64 [8]byte
 type CTypeUint256 [32]byte
 type CTypeString []byte
 type CTypeAddress [25]byte
+type CTypeTuple []byte
 
 var (
 	CBoolTrue  = CTypeBool{1}
 	CBoolFalse = CTypeBool{0}
 )
+
+func (t CTypeTuple) String() string {
+	return string(t)
+}
+
+func (t CTypeTuple) Map() map[string]interface{} {
+	result := make(map[string]interface{})
+	if err := json.Unmarshal(t, &result); err != nil {
+		return nil
+	}
+	return result
+}
 
 func (t CTypeUint8) Uint8() uint8 {
 	return t[0]
@@ -170,4 +186,114 @@ func NewUint256(n *big.Int) (m CTypeUint256) {
 func NewAddress(n common.Address) (m CTypeAddress) {
 	copy(m[:], n[:])
 	return
+}
+
+func NewTuple(n map[string]interface{}) (m CTypeTuple) {
+	bs, err := json.Marshal(n)
+	if err != nil {
+		return nil
+	}
+	copy(m[:], bs[:])
+	return
+}
+
+type HeapChildren struct {
+	Address string      `json:"address"`
+	TokenId string      `json:"tokenid"`
+	Name    string      `json:"name"`
+	Amount  interface{} `json:"amount"`
+}
+
+func DncodeCTypeTuple(n string) ([]HeapChildren, error) {
+	n = n[2:]
+	ast, err := hex.DecodeString(n)
+	if err != nil {
+		return nil, err
+	}
+	// fmt.Println(string(ast))
+	pack := make(map[string]interface{}, 0)
+	if err := json.Unmarshal(ast, &pack); err != nil {
+		return nil, err
+	}
+	result := make([]HeapChildren, 0)
+	for key, val := range pack {
+
+		var heapChildrenResp HeapChildren
+		keyBatch := strings.Split(key, ",")
+		if len(keyBatch) > 0 {
+			heap := val.(map[string]interface{})
+			for keys, vals := range heap {
+				heapChildren := vals.(map[string]interface{})
+				heapChildrenkey := heapChildren["type"].(string)
+				heapChildrenVal := heapChildren["value"].(string)
+				ens, err := Decode(heapChildrenkey, heapChildrenVal)
+				if err != nil {
+					return nil, err
+				}
+				heapChildrenResp.Address = keyBatch[0]
+				heapChildrenResp.TokenId = keyBatch[1]
+				heapChildrenResp.Name = keys
+				heapChildrenResp.Value = ens
+				result = append(result, heapChildrenResp)
+			}
+		}
+		// } else {
+		// 	heap := val.(map[string]interface{})
+		// 	heapkey := heap["type"].(string)
+		// 	heapVal := heap["value"].(string)
+		// 	ens, err := Decode(heapkey, heapVal)
+		// 	if err != nil {
+		// 		return nil, err
+		// 	}
+		// 	heapChildrenResp.Name = key
+		// 	heapChildrenResp.Value = ens
+		// 	result = append(result, heapChildrenResp)
+		// }
+	}
+	// bs, err := json.Marshal(result)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	return result, nil
+}
+
+func Decode(heapkey, heapVal string) (interface{}, error) {
+	var result interface{}
+	switch heapkey {
+	case "CTypeString":
+		para := CTypeString(heapVal)
+		pars, err := hex.DecodeString(para.String())
+		if err != nil {
+			return "", fmt.Errorf("ctypestring to string:%v", heapVal)
+		}
+		result = string(pars)
+	case "CTypeUint8":
+		big8, ok := big.NewInt(0).SetString(heapVal, 16)
+		if !ok {
+			return "", fmt.Errorf("ctypeuint256 to uint256:%v", heapVal)
+		}
+		para := NewUint8(uint8(big8.Uint64()))
+		result = para.Uint8()
+	case "CTypeUint256":
+		big256, ok := big.NewInt(0).SetString(heapVal, 16)
+		if !ok {
+			return "", fmt.Errorf("ctypeuint256 to uint256:%v", heapVal)
+		}
+		para := NewUint256(big256)
+		result = para.BigInt().String()
+	case "CTypeAddress":
+		addrBytes, err := hex.DecodeString(heapVal)
+		if err != nil {
+			return "", fmt.Errorf("ctypeaddress to address:%v", err)
+		}
+		para := NewAddress(common.Bytes2Address(addrBytes))
+		address := para.Address()
+		result = address.B58String()
+	case "CTypeBool":
+		// para := heapVal.(CTypeBool)
+		// result = para.Bool()
+	default:
+		return "", fmt.Errorf("type check err")
+	}
+	return result, nil
 }

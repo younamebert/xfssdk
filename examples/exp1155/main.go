@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	Key              = "0x0101da503ac2fe8afa56ab4f6ac3443c1c8051e02d67bd7670c8d86a5e9f42c8c58d"
-	DefaultAddr      = crypto.Prikey2Addr(Key)
-	deafaultStdtoken = &exp1155.Exp1155{
-		ContractAddress:      "bZBJwCVZNvtnZ6MQRhoDy54EJPzTo8czc",
+	Key                 = "0x0101da503ac2fe8afa56ab4f6ac3443c1c8051e02d67bd7670c8d86a5e9f42c8c58d"
+	DefaultAddr         = crypto.Prikey2Addr(Key)
+	defaultEXP1155Token = &exp1155.Exp1155{
+		ContractAddress:      "ddjWAUubn6JA4tu51Y1vyjxSNyGVpr3jD",
 		CreatorAddressPrikey: Key,
 	}
 	app          *cli.App
@@ -61,7 +61,7 @@ func main() {
 		},
 		{
 			Name:     "mintBatch",
-			Usage:    "<address> <amount> <tokenUri>",
+			Usage:    "<address> <amounts> <tokenUrls>",
 			Category: "arithmetic",
 			Action:   exp1155Token_MintBatch,
 		},
@@ -70,6 +70,12 @@ func main() {
 			Usage:    "<address> <tokenid>",
 			Category: "arithmetic",
 			Action:   exp1155Token_BalanceOf,
+		},
+		{
+			Name:     "balanceofBatch",
+			Usage:    "<addrs> <tokenids>",
+			Category: "arithmetic",
+			Action:   exp1155Token_BalanceOfBatch,
 		},
 		{
 			Name:     "caddr",
@@ -141,8 +147,7 @@ func exp1155Token_Mint(c *cli.Context) error {
 		Recipient: args.Get(0),
 		Tokenurl:  args.Get(1),
 	}
-
-	txhash, err := deafaultStdtoken.Mint(Exp1155Class)
+	txhash, err := defaultEXP1155Token.Mint(Exp1155Class)
 	if err != nil {
 		return err
 	}
@@ -152,24 +157,23 @@ func exp1155Token_Mint(c *cli.Context) error {
 
 func exp1155Token_MintBatch(c *cli.Context) error {
 	args := c.Args()
-	// amount, err := strconv.Atoi(args.Get(1))
-	// if err != nil {
-	// 	return err
-	// }
-	tokenurls := strings.Split(args.Get(1), ",")
-	Exp1155Class := &reqcontract.NFTMarketMintBatchArgs{
+
+	amounts := strings.Split(args.Get(1), ",")
+	tokenurls := strings.Split(args.Get(2), ",")
+	exp1155Class := &reqcontract.Exp1155MintBatchArgs{
 		Address:   args.Get(0),
-		Amount:    big.NewInt(int64(amount)),
+		Amounts:   amounts,
 		TokenUrls: tokenurls,
 	}
 
-	txhash, err := deafaultStdtoken.Mint(Exp1155Class)
+	txhash, err := defaultEXP1155Token.MintBatch(exp1155Class)
 	if err != nil {
 		return err
 	}
 	fmt.Println(txhash)
 	return nil
 }
+
 func exp1155Token_BalanceOf(c *cli.Context) error {
 	args := c.Args()
 
@@ -178,13 +182,40 @@ func exp1155Token_BalanceOf(c *cli.Context) error {
 		return err
 	}
 	tokenid := big.NewInt(int64(id))
-	txhash, err := deafaultStdtoken.BalanceOf(args.Get(0), tokenid)
+	result, err := defaultEXP1155Token.BalanceOf(args.Get(0), tokenid)
 	if err != nil {
 		return err
 	}
-	fmt.Println(txhash)
+	fmt.Printf("%v\n", result)
 	return nil
 }
+
+func exp1155Token_BalanceOfBatch(c *cli.Context) error {
+	args := c.Args()
+
+	addrs := strings.Split(args.Get(0), ",")
+	tokenids := strings.Split(args.Get(1), ",")
+	amount, tokenurl, err := defaultEXP1155Token.BalanceOfBatch(addrs, tokenids)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("amount:%v\ntokenurl:%v\n", amount, tokenurl)
+	return nil
+}
+
+func exp1155Token_SafeTransferFrom(c *cli.Context) error {
+	args := c.Args()
+
+	addrs := strings.Split(args.Get(0), ",")
+	tokenids := strings.Split(args.Get(1), ",")
+	amount, tokenurl, err := defaultEXP1155Token.BalanceOfBatch(addrs, tokenids)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("amount:%v\ntokenurl:%v\n", amount, tokenurl)
+	return nil
+}
+
 func Stdtoken_caddr(c *cli.Context) error {
 	args := c.Args()
 	address := common.StrB58ToAddress(args.Get(0))

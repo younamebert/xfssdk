@@ -56,6 +56,7 @@ func makeSlice(n int) []byte {
 	}()
 	return make([]byte, n)
 }
+
 func (b *buffer) grow(n int) int {
 	m := b.Len()
 	// If buffer is empty, reset to recover space.
@@ -90,6 +91,7 @@ func (b *buffer) grow(n int) int {
 	b.buf = b.buf[:m+n]
 	return m
 }
+
 func (b *buffer) Write(p []byte) (n int, err error) {
 	blocks := len(p) / rowlen
 	mod := len(p) % rowlen
@@ -102,6 +104,7 @@ func (b *buffer) Write(p []byte) (n int, err error) {
 	}
 	return copy(b.buf[m:], p), nil
 }
+
 func (b *buffer) WriteString(s string) (err error) {
 	slen := len(s)
 	var slenbuf [8]byte
@@ -116,6 +119,7 @@ func (b *buffer) WriteString(s string) (err error) {
 	}
 	return nil
 }
+
 func (b *buffer) ReadRow() (row, error) {
 	if b.empty() {
 		// Buffer is empty, reset to recover space.
@@ -130,6 +134,7 @@ func (b *buffer) ReadRow() (row, error) {
 	b.off += n
 	return rowvar, nil
 }
+
 func (b *buffer) ReadRows(size int) ([]row, int, error) {
 	blocks := size / rowlen
 	mod := size % rowlen
@@ -175,6 +180,7 @@ func (b *buffer) ReadUint32() (n abi.CTypeUint32, e error) {
 	copy(n[:], r[:4])
 	return
 }
+
 func (b *buffer) ReadUint256() (n abi.CTypeUint256, e error) {
 	var r []row
 	var m int
@@ -216,6 +222,7 @@ func (b *buffer) Read(n []byte) (e error) {
 	copy(n[:], buf[:m])
 	return
 }
+
 func (b *buffer) ReadString(size int) (n abi.CTypeString, e error) {
 	var r []row
 	var m int
