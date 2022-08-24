@@ -1,6 +1,7 @@
 package exp1155
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -82,9 +83,9 @@ func (exp1155 *Exp1155) Mint(args *reqcontract.Exp1155MintArgs) (string, error) 
 
 	address := common.StrB58ToAddress(args.Recipient)
 	tokenid := abi.CTypeString(args.Tokenurl)
+	amount := abi.NewUint256(args.Amount)
 
-	fmt.Println(address.B58String(), tokenid.String())
-	packed, err := apis.GVA_ABI_EXP1155.Mint(abi.NewAddress(address), tokenid)
+	packed, err := apis.GVA_ABI_EXP1155.Mint(abi.NewAddress(address), tokenid, amount)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
@@ -122,7 +123,7 @@ func (exp1155 *Exp1155) Mint(args *reqcontract.Exp1155MintArgs) (string, error) 
 }
 
 func (exp1155 *Exp1155) MintBatch(args *reqcontract.Exp1155MintBatchArgs) (string, error) {
-	address := common.StrB58ToAddress(args.Address)
+	address := common.StrB58ToAddress(args.Recipient)
 
 	if len(args.Amounts) != len(args.TokenUrls) {
 		return "", errors.New("Amounts.Len != tokenurls.Len")
@@ -196,13 +197,13 @@ func (exp1155 *Exp1155) BalanceOf(account_address string, tokenid *big.Int) (str
 	return string(bs), nil
 }
 
-func (exp1155 *Exp1155) BalanceOfBatch(accounts, ids []string) (*big.Int, string, error) {
+func (exp1155 *Exp1155) BalanceOfBatch(accounts, ids []string) (string, error) {
 	accoutsCtypes := abi.CTypeString(strings.Join(accounts, ","))
 	idsCtypes := abi.CTypeString(strings.Join(ids, ","))
 
 	packed, err := apis.GVA_ABI_EXP1155.BalanceOfBatch(accoutsCtypes, idsCtypes)
 	if err != nil {
-		return nil, "", fmt.Errorf("no connection established in service err:%v", err)
+		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}
 	req := contract.VMCallData{
 		To:   exp1155.ContractAddress,
@@ -210,30 +211,257 @@ func (exp1155 *Exp1155) BalanceOfBatch(accounts, ids []string) (*big.Int, string
 	}
 	var result interface{}
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
-		return nil, "", err
+		return "", err
 	}
 	if result == nil {
-		return nil, "", nil
+		return "", nil
 	}
 	tuple, err := abi.DncodeCTypeTuple(result.(string))
 	if err != nil {
-		return nil, "", err
+		return "", err
 	}
-	bs, _ := json.MarshalIndent(tuple, " ", " ")
-	fmt.Println(string(bs))
-	// if result == nil {
-	// 	return nil, "", nil
-	// }
-	// tuple, err := abi.DncodeCTypeTuple(result.(string))
-	// if err != nil {
-	// 	return nil, "", err
-	// }
-	// newAmount := tuple["CTypeUint256"].(string)
-	// amounts, _ := big.NewInt(0).SetString(newAmount, 0)
-	// tokenurl := tuple["CTypeString"].(string)
-	return nil, "", nil
+	bs, err := json.Marshal(tuple)
+	if err != nil {
+		return "", err
+	}
+	return string(bs), nil
 }
 
-// func (exp1155 *Exp1155) TransferFrom() (string, error) {
+func (exp1155 *Exp1155) SetApprovalForAll(args *reqcontract.Exp1155SetApprovalForAllArgs) (string, error) {
+	operator := common.StrB58ToAddress(args.Operator)
 
-// }
+	var (
+		approvedCType abi.CTypeBool
+		operatorCType abi.CTypeAddress
+	)
+	if args.Approved {
+		approvedCType = abi.CTypeBool{1}
+	} else {
+		approvedCType = abi.CTypeBool{0}
+	}
+	operatorCType = abi.NewAddress(operator)
+
+	packed, err := apis.GVA_ABI_EXP1155.SetApprovalForAll(operatorCType, approvedCType)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	from, err := libs.StrKey2Address(args.PriKey)
+	if err != nil {
+		return "", err
+	}
+	req := contract.VMCallData{
+		From: from.B58String(),
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result interface{}
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
+	fmt.Println(result)
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	//初始化GAS和code
+	tokenTransfer.To = exp1155.ContractAddress
+	tokenTransfer.Data = packed
+	// fmt.Printf()
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.PriKey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("invalid mint err:%v", err)
+	}
+
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	fmt.Println(transfer2Raw)
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
+func (exp1155 *Exp1155) IsApprovalForAll(args *reqcontract.Exp1155IsApprovedForAllArgs) (bool, error) {
+	operator, account := common.StrB58ToAddress(args.Operator), common.StrB58ToAddress(args.Account)
+
+	operatorCType, accountCType := abi.NewAddress(operator), abi.NewAddress(account)
+
+	packed, err := apis.GVA_ABI_EXP1155.IsApprovedForAll(accountCType, operatorCType)
+	if err != nil {
+		return false, fmt.Errorf("no connection established in service err:%v", err)
+	}
+	req := contract.VMCallData{
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return false, err
+	}
+	result = strings.TrimPrefix(result, "0x")
+	bytesBool, err := hex.DecodeString(result)
+	if err != nil {
+		return false, err
+	}
+	CTypeBool := abi.CTypeBool{bytesBool[0]}
+	return CTypeBool.Bool(), nil
+}
+
+func (exp1155 *Exp1155) TransferFrom(args *reqcontract.Exp1155SafeTransferFromArgs) (string, error) {
+	from, to := common.StrB58ToAddress(args.From), common.StrB58ToAddress(args.To)
+	amountCtype, tokenidCtype := abi.NewUint256(args.Amount), abi.NewUint256(args.Id)
+	fromCtype, toCtype := abi.NewAddress(from), abi.NewAddress(to)
+
+	packed, err := apis.GVA_ABI_EXP1155.TransferFrom(fromCtype, toCtype, tokenidCtype, amountCtype)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+
+	caller, err := libs.StrKey2Address(args.Prikey)
+	if err != nil {
+		return "", err
+	}
+	req := contract.VMCallData{
+		From: caller.B58String(),
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	//初始化GAS和code
+	tokenTransfer.To = exp1155.ContractAddress
+	tokenTransfer.Data = packed
+
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Prikey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("invalid mint err:%v", err)
+	}
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	fmt.Println(transfer2Raw)
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
+func (exp1155 *Exp1155) TransferFromBatch(args *reqcontract.Exp1155SafeBatchTransferFromArgs) (string, error) {
+	from, to := common.StrB58ToAddress(args.From), common.StrB58ToAddress(args.To)
+
+	fromCtype, toCtype := abi.NewAddress(from), abi.NewAddress(to)
+
+	amountsCtype, tokenidsCtype := abi.CTypeString(args.Amounts), abi.CTypeString(args.Ids)
+	packed, err := apis.GVA_ABI_EXP1155.TransferFromBatch(fromCtype, toCtype, tokenidsCtype, amountsCtype)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	caller, err := libs.StrKey2Address(args.Prikey)
+	if err != nil {
+		return "", err
+	}
+	req := contract.VMCallData{
+		From: caller.B58String(),
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	//初始化GAS和code
+	tokenTransfer.To = exp1155.ContractAddress
+	tokenTransfer.Data = packed
+
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Prikey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("invalid mint err:%v", err)
+	}
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	fmt.Println(transfer2Raw)
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
+func (exp1155 *Exp1155) Burn(args *reqcontract.Exp1155BurnArgs) (string, error) {
+	address := common.StrB58ToAddress(args.From)
+	fromCtype := abi.NewAddress(address)
+	tokenidCtype := abi.NewUint256(args.ID)
+	amountCtype := abi.NewUint256(args.Amount)
+
+	packed, err := apis.GVA_ABI_EXP1155.Burn(fromCtype, tokenidCtype, amountCtype)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	caller, err := libs.StrKey2Address(args.Prikey)
+	if err != nil {
+		return "", err
+	}
+	req := contract.VMCallData{
+		From: caller.B58String(),
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	//初始化GAS和code
+	tokenTransfer.To = exp1155.ContractAddress
+	tokenTransfer.Data = packed
+
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Prikey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("invalid mint err:%v", err)
+	}
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}
+
+func (exp1155 *Exp1155) BurnBatch(args *reqcontract.Exp1155BurnBatchArgs) (string, error) {
+	address := common.StrB58ToAddress(args.From)
+	fromCtype := abi.NewAddress(address)
+	tokenidCtype, amountsCtype := abi.CTypeString(args.IDs), abi.CTypeString(args.Amounts)
+
+	packed, err := apis.GVA_ABI_EXP1155.BurnBatch(fromCtype, tokenidCtype, amountsCtype)
+	if err != nil {
+		return "", fmt.Errorf("no connection established in service err:%v", err)
+	}
+	caller, err := libs.StrKey2Address(args.Prikey)
+	if err != nil {
+		return "", err
+	}
+	req := contract.VMCallData{
+		From: caller.B58String(),
+		To:   exp1155.ContractAddress,
+		Data: packed,
+	}
+	var result string
+	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
+		return "", err
+	}
+	tokenTransfer := new(reqtransfer.StringRawTransaction)
+	//初始化GAS和code
+	tokenTransfer.To = exp1155.ContractAddress
+	tokenTransfer.Data = packed
+
+	stdtokentransfer, err := transfer.EnCodeRawTransaction(args.Prikey, tokenTransfer)
+	if err != nil {
+		return "", fmt.Errorf("invalid mint err:%v", err)
+	}
+	//交易数据转base64
+	transfer2Raw, err := stdtokentransfer.Transfer2Raw()
+	if err != nil {
+		return "", err
+	}
+	return transfer.SendRawTransfer(transfer2Raw)
+}

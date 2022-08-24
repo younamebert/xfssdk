@@ -78,6 +78,42 @@ func main() {
 			Action:   exp1155Token_BalanceOfBatch,
 		},
 		{
+			Name:     "approvalforall",
+			Usage:    "<operator> <approved> <prikey>",
+			Category: "arithmetic",
+			Action:   exp1155Token_SetApprovalForAll,
+		},
+		{
+			Name:     "isApprovalforall",
+			Usage:    "<account> <operator>",
+			Category: "arithmetic",
+			Action:   exp1155Token_IsApprovalForAll,
+		},
+		{
+			Name:     "transferFrom",
+			Usage:    "<from> <to> <id> <amount> <prikey>",
+			Category: "arithmetic",
+			Action:   exp1155Token_SafeTransferFrom,
+		},
+		{
+			Name:     "transferFromBatch",
+			Usage:    "<from> <to> <ids> <amounts>",
+			Category: "arithmetic",
+			Action:   exp1155Token_SafeTransferFromBatch,
+		},
+		{
+			Name:     "burn",
+			Usage:    "<from> <id> <amount>",
+			Category: "arithmetic",
+			Action:   exp1155Token_Burn,
+		},
+		{
+			Name:     "burnBatch",
+			Usage:    "<from> <ids> <amounts>",
+			Category: "arithmetic",
+			Action:   exp1155Token_BurnBatch,
+		},
+		{
 			Name:     "caddr",
 			Usage:    "<address> <nonce>",
 			Category: "arithmetic",
@@ -143,9 +179,15 @@ func exp1155Token_Mint(c *cli.Context) error {
 		fmt.Println(c.App.Usage)
 		return nil
 	}
+	amount, ok := big.NewInt(0).SetString(args.Get(2), 0)
+	if !ok {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
 	Exp1155Class := &reqcontract.Exp1155MintArgs{
 		Recipient: args.Get(0),
 		Tokenurl:  args.Get(1),
+		Amount:    amount,
 	}
 	txhash, err := defaultEXP1155Token.Mint(Exp1155Class)
 	if err != nil {
@@ -160,10 +202,14 @@ func exp1155Token_MintBatch(c *cli.Context) error {
 
 	amounts := strings.Split(args.Get(1), ",")
 	tokenurls := strings.Split(args.Get(2), ",")
+	if len(amounts) != len(tokenurls) {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
 	exp1155Class := &reqcontract.Exp1155MintBatchArgs{
-		Address:   args.Get(0),
-		Amounts:   amounts,
-		TokenUrls: tokenurls,
+		Recipient: args.Get(0),
+		Amounts:   args.Get(1),
+		TokenUrls: args.Get(2),
 	}
 
 	txhash, err := defaultEXP1155Token.MintBatch(exp1155Class)
@@ -186,7 +232,7 @@ func exp1155Token_BalanceOf(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%v\n", result)
+	fmt.Printf("result:%v\n", result)
 	return nil
 }
 
@@ -195,24 +241,170 @@ func exp1155Token_BalanceOfBatch(c *cli.Context) error {
 
 	addrs := strings.Split(args.Get(0), ",")
 	tokenids := strings.Split(args.Get(1), ",")
-	amount, tokenurl, err := defaultEXP1155Token.BalanceOfBatch(addrs, tokenids)
+	result, err := defaultEXP1155Token.BalanceOfBatch(addrs, tokenids)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("amount:%v\ntokenurl:%v\n", amount, tokenurl)
+	fmt.Printf("result:%v\n", result)
+	return nil
+}
+
+func exp1155Token_SetApprovalForAll(c *cli.Context) error {
+	args := c.Args()
+	if c.NArg() < 3 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	approved, err := strconv.ParseBool(args.Get(1))
+	if err != nil {
+		return err
+	}
+	req := &reqcontract.Exp1155SetApprovalForAllArgs{
+		Operator: args.Get(0),
+		Approved: approved,
+		PriKey:   args.Get(2),
+	}
+	txhash, err := defaultEXP1155Token.SetApprovalForAll(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("txhash:%v\n", txhash)
+	return nil
+}
+
+func exp1155Token_IsApprovalForAll(c *cli.Context) error {
+	args := c.Args()
+	if c.NArg() < 2 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	req := &reqcontract.Exp1155IsApprovedForAllArgs{
+		Account:  args.Get(0),
+		Operator: args.Get(1),
+	}
+	approved, err := defaultEXP1155Token.IsApprovalForAll(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%v\n", approved)
 	return nil
 }
 
 func exp1155Token_SafeTransferFrom(c *cli.Context) error {
 	args := c.Args()
 
-	addrs := strings.Split(args.Get(0), ",")
-	tokenids := strings.Split(args.Get(1), ",")
-	amount, tokenurl, err := defaultEXP1155Token.BalanceOfBatch(addrs, tokenids)
+	if c.NArg() < 4 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	tokenid, ok := big.NewInt(0).SetString(args.Get(2), 0)
+	if !ok {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	amount, ok := big.NewInt(0).SetString(args.Get(3), 0)
+	if !ok {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	req := &reqcontract.Exp1155SafeTransferFromArgs{
+		From:   args.Get(0),
+		To:     args.Get(1),
+		Id:     tokenid,
+		Amount: amount,
+		Prikey: args.Get(4),
+	}
+	txhash, err := defaultEXP1155Token.TransferFrom(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("amount:%v\ntokenurl:%v\n", amount, tokenurl)
+	fmt.Printf("txhash:%v\n", txhash)
+	return nil
+}
+
+func exp1155Token_SafeTransferFromBatch(c *cli.Context) error {
+	args := c.Args()
+	if c.NArg() < 4 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+
+	tokenids := strings.Split(args.Get(2), ",")
+	amounts := strings.Split(args.Get(3), ",")
+	if len(tokenids) == len(amounts) {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	req := &reqcontract.Exp1155SafeBatchTransferFromArgs{
+		From:    args.Get(0),
+		To:      args.Get(1),
+		Ids:     args.Get(2),
+		Amounts: args.Get(3),
+		Prikey:  args.Get(4),
+	}
+	txhash, err := defaultEXP1155Token.TransferFromBatch(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("txhash:%v\n", txhash)
+	return nil
+}
+
+func exp1155Token_Burn(c *cli.Context) error {
+	args := c.Args()
+	if c.NArg() < 3 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+
+	tokenid, ok := big.NewInt(0).SetString(args.Get(1), 0)
+	if !ok {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	amount, ok := big.NewInt(0).SetString(args.Get(2), 0)
+	if !ok {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	req := &reqcontract.Exp1155BurnArgs{
+		From:   args.Get(0),
+		ID:     tokenid,
+		Amount: amount,
+		Prikey: args.Get(3),
+	}
+	txhash, err := defaultEXP1155Token.Burn(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("txhash:%v\n", txhash)
+	return nil
+}
+
+func exp1155Token_BurnBatch(c *cli.Context) error {
+	args := c.Args()
+	if c.NArg() < 3 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+
+	tokenids := strings.Split(args.Get(1))
+	amounts := strings.Split(args.Get(2))
+	if len(tokenids) != len(amounts) {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
+	req := &reqcontract.Exp1155BurnBatchArgs{
+		From:    args.Get(0),
+		IDs:     args.Get(1),
+		Amounts: args.Get(2),
+		Prikey:  args.Get(3),
+	}
+	txhash, err := defaultEXP1155Token.BurnBatch(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("txhash:%v\n", txhash)
 	return nil
 }
 

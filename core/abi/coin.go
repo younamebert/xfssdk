@@ -197,32 +197,37 @@ func NewTuple(n map[string]interface{}) (m CTypeTuple) {
 	return
 }
 
+type Heap struct {
+	Address  string         `json:"address"`
+	TokenId  string         `json:"tokenid"`
+	Children []HeapChildren `json:"children"`
+}
 type HeapChildren struct {
-	Address string      `json:"address"`
-	TokenId string      `json:"tokenid"`
-	Name    string      `json:"name"`
-	Amount  interface{} `json:"amount"`
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
 }
 
-func DncodeCTypeTuple(n string) ([]HeapChildren, error) {
-	n = n[2:]
+func DncodeCTypeTuple(n string) ([]Heap, error) {
+	n = strings.TrimPrefix(n, "0x")
 	ast, err := hex.DecodeString(n)
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Println(string(ast))
 	pack := make(map[string]interface{}, 0)
 	if err := json.Unmarshal(ast, &pack); err != nil {
 		return nil, err
 	}
-	result := make([]HeapChildren, 0)
+	result := make([]Heap, 0)
 	for key, val := range pack {
-
-		var heapChildrenResp HeapChildren
+		var heapResp Heap
+		resultChildren := make([]HeapChildren, 0)
 		keyBatch := strings.Split(key, ",")
+		heapResp.Address = keyBatch[0]
+		heapResp.TokenId = keyBatch[1]
 		if len(keyBatch) > 0 {
 			heap := val.(map[string]interface{})
 			for keys, vals := range heap {
+				var heapChildrenResp HeapChildren
 				heapChildren := vals.(map[string]interface{})
 				heapChildrenkey := heapChildren["type"].(string)
 				heapChildrenVal := heapChildren["value"].(string)
@@ -230,30 +235,14 @@ func DncodeCTypeTuple(n string) ([]HeapChildren, error) {
 				if err != nil {
 					return nil, err
 				}
-				heapChildrenResp.Address = keyBatch[0]
-				heapChildrenResp.TokenId = keyBatch[1]
 				heapChildrenResp.Name = keys
 				heapChildrenResp.Value = ens
-				result = append(result, heapChildrenResp)
+				resultChildren = append(resultChildren, heapChildrenResp)
 			}
+			heapResp.Children = resultChildren
 		}
-		// } else {
-		// 	heap := val.(map[string]interface{})
-		// 	heapkey := heap["type"].(string)
-		// 	heapVal := heap["value"].(string)
-		// 	ens, err := Decode(heapkey, heapVal)
-		// 	if err != nil {
-		// 		return nil, err
-		// 	}
-		// 	heapChildrenResp.Name = key
-		// 	heapChildrenResp.Value = ens
-		// 	result = append(result, heapChildrenResp)
-		// }
+		result = append(result, heapResp)
 	}
-	// bs, err := json.Marshal(result)
-	// if err != nil {
-	// 	return nil, err
-	// }
 	return result, nil
 }
 

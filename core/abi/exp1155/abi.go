@@ -109,6 +109,20 @@ func (abi ABI) Burn(params ...interface{}) (string, error) {
 	return result, nil
 }
 
+func (abi ABI) BurnBatch(params ...interface{}) (string, error) {
+	byteArgs, err := abi.PackArgs(BURNBATCH, params...)
+	if err != nil {
+		return "", err
+	}
+	data := common.FromHex(EXP1155BIN)
+	dataMethod := common.FromHex(BURNBATCH)
+	data = append(data, dataMethod...)
+	data = append(data, byteArgs...)
+
+	result := "0x" + hex.EncodeToString(data)
+	return result, nil
+}
+
 func (abi ABI) IsApprovedForAll(params ...interface{}) (string, error) {
 	byteArgs, err := abi.PackArgs(ISAPPROVEDFORALL, params...)
 	if err != nil {
@@ -158,6 +172,34 @@ func (abi ABI) BalanceOf(params ...interface{}) (string, error) {
 	}
 	data := common.FromHex(EXP1155BIN)
 	dataMethod := common.FromHex(BALANCEOF)
+	data = append(data, dataMethod...)
+	data = append(data, byteArgs...)
+
+	result := "0x" + hex.EncodeToString(data)
+	return result, nil
+}
+
+func (abi ABI) TransferFrom(params ...interface{}) (string, error) {
+	byteArgs, err := abi.PackArgs(SAFETRANSFERFROM, params...)
+	if err != nil {
+		return "", err
+	}
+	data := common.FromHex(EXP1155BIN)
+	dataMethod := common.FromHex(SAFETRANSFERFROM)
+	data = append(data, dataMethod...)
+	data = append(data, byteArgs...)
+
+	result := "0x" + hex.EncodeToString(data)
+	return result, nil
+}
+
+func (abi ABI) TransferFromBatch(params ...interface{}) (string, error) {
+	byteArgs, err := abi.PackArgs(SAFEBATCHTRANSFERFROM, params...)
+	if err != nil {
+		return "", err
+	}
+	data := common.FromHex(EXP1155BIN)
+	dataMethod := common.FromHex(SAFEBATCHTRANSFERFROM)
 	data = append(data, dataMethod...)
 	data = append(data, byteArgs...)
 
