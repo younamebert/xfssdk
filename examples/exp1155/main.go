@@ -55,13 +55,13 @@ func main() {
 		},
 		{
 			Name:     "mint",
-			Usage:    "<address> <tokenurl>",
+			Usage:    "<address> <tokenurl> <amount>",
 			Category: "arithmetic",
 			Action:   exp1155Token_Mint,
 		},
 		{
 			Name:     "mintBatch",
-			Usage:    "<address> <amounts> <tokenUrls>",
+			Usage:    "<address> <tokenurls> <amounts>",
 			Category: "arithmetic",
 			Action:   exp1155Token_MintBatch,
 		},
@@ -200,16 +200,16 @@ func exp1155Token_Mint(c *cli.Context) error {
 func exp1155Token_MintBatch(c *cli.Context) error {
 	args := c.Args()
 
-	amounts := strings.Split(args.Get(1), ",")
-	tokenurls := strings.Split(args.Get(2), ",")
+	tokenurls := strings.Split(args.Get(1), ",")
+	amounts := strings.Split(args.Get(2), ",")
 	if len(amounts) != len(tokenurls) {
 		fmt.Println(c.App.Usage)
 		return nil
 	}
 	exp1155Class := &reqcontract.Exp1155MintBatchArgs{
 		Recipient: args.Get(0),
-		Amounts:   args.Get(1),
-		TokenUrls: args.Get(2),
+		TokenUrls: args.Get(1),
+		Amounts:   args.Get(2),
 	}
 
 	txhash, err := defaultEXP1155Token.MintBatch(exp1155Class)
