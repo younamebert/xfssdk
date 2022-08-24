@@ -128,10 +128,9 @@ func (exp1155 *Exp1155) MintBatch(args *reqcontract.Exp1155MintBatchArgs) (strin
 	if len(args.Amounts) != len(args.TokenUrls) {
 		return "", errors.New("Amounts.Len != tokenurls.Len")
 	}
-	var amounts, tokenUrls abi.CTypeString
-	amounts = abi.CTypeString(strings.Join(args.Amounts, ","))
-	tokenUrls = abi.CTypeString(strings.Join(args.TokenUrls, ","))
-	packed, err := apis.GVA_ABI_EXP1155.MintBatch(abi.NewAddress(address), tokenUrls, amounts)
+	amountsCtype := abi.CTypeString(args.Amounts)
+	tokenUrlsCtype := abi.CTypeString(args.TokenUrls)
+	packed, err := apis.GVA_ABI_EXP1155.MintBatch(abi.NewAddress(address), tokenUrlsCtype, amountsCtype)
 	if err != nil {
 		return "", fmt.Errorf("no connection established in service err:%v", err)
 	}

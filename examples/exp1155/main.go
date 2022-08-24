@@ -388,8 +388,8 @@ func exp1155Token_BurnBatch(c *cli.Context) error {
 		return nil
 	}
 
-	tokenids := strings.Split(args.Get(1))
-	amounts := strings.Split(args.Get(2))
+	tokenids := strings.Split(args.Get(1), ",")
+	amounts := strings.Split(args.Get(2), ",")
 	if len(tokenids) != len(amounts) {
 		fmt.Println(c.App.Usage)
 		return nil
