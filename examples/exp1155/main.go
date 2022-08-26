@@ -43,7 +43,7 @@ func main() {
 		{
 			Name: "create",
 			// Aliases:  []string{"create"},
-			Usage:    "create",
+			Usage:    "create <name> <symbol>",
 			Category: "arithmetic",
 			Action:   exp1155Token_Create,
 		},
@@ -139,7 +139,14 @@ func main() {
 }
 
 func exp1155Token_Create(c *cli.Context) error {
+	args := c.Args()
+	if c.NArg() < 2 {
+		fmt.Println(c.App.Usage)
+		return nil
+	}
 	argsCreate := new(reqcontract.Exp1155CreateArgs)
+	argsCreate.Name = args.Get(0)
+	argsCreate.Symbol = args.Get(1)
 	code, err := exp1155Local.Create(argsCreate)
 	if err != nil {
 		fmt.Println(err)
@@ -232,7 +239,7 @@ func exp1155Token_BalanceOf(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("result:%v\n", result)
+	fmt.Printf("result:%v\n", result.String())
 	return nil
 }
 

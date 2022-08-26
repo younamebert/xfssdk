@@ -207,7 +207,25 @@ type HeapChildren struct {
 	Value interface{} `json:"value"`
 }
 
-func DncodeCTypeTuple(n string) ([]Heap, error) {
+type Heaps []Heap
+
+func (heaps Heaps) String() string {
+	bs, _ := json.Marshal(heaps)
+	return string(bs)
+}
+
+func (heaps Heaps) Balance() string {
+	for _, val := range heaps {
+		for _, vals := range val.Children {
+			if vals.Name == "balance" {
+				return vals.Value.(string)
+			}
+		}
+	}
+	return "0"
+}
+
+func DncodeCTypeTuple(n string) (Heaps, error) {
 	n = strings.TrimPrefix(n, "0x")
 	ast, err := hex.DecodeString(n)
 	if err != nil {

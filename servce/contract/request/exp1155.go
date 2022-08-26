@@ -5,6 +5,8 @@ import (
 )
 
 type Exp1155CreateArgs struct {
+	Name   string `json:"name"`
+	Symbol string `json:"symbol"`
 }
 
 type Exp1155DeployArgs struct {

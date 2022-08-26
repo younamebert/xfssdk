@@ -24,7 +24,9 @@ import (
 type Exp1155Local struct{}
 
 func (exp1155local *Exp1155Local) Create(args *reqcontract.Exp1155CreateArgs) (string, error) {
-	code, err := apis.GVA_ABI_EXP1155.Create()
+	name := abi.CTypeString(args.Name)
+	symbol := abi.CTypeString(args.Symbol)
+	code, err := apis.GVA_ABI_EXP1155.Create(name, symbol)
 	if err != nil {
 		return "", fmt.Errorf("an exception occurred of contract argument err:%v", err)
 	}
@@ -166,13 +168,13 @@ func (exp1155 *Exp1155) MintBatch(args *reqcontract.Exp1155MintBatchArgs) (strin
 	return transfer.SendRawTransfer(transfer2Raw)
 }
 
-func (exp1155 *Exp1155) BalanceOf(account_address string, tokenid *big.Int) (string, error) {
+func (exp1155 *Exp1155) BalanceOf(account_address string, tokenid *big.Int) (abi.Heaps, error) {
 	accoutAddr := common.StrB58ToAddress(account_address)
 	cTypeAddr := abi.NewAddress(accoutAddr)
 	id := abi.NewUint256(tokenid)
 	packed, err := apis.GVA_ABI_EXP1155.BalanceOf(cTypeAddr, id)
 	if err != nil {
-		return "", fmt.Errorf("no connection established in service err:%v", err)
+		return nil, fmt.Errorf("no connection established in service err:%v", err)
 	}
 	req := contract.VMCallData{
 		To:   exp1155.ContractAddress,
@@ -180,20 +182,16 @@ func (exp1155 *Exp1155) BalanceOf(account_address string, tokenid *big.Int) (str
 	}
 	var result interface{}
 	if err := apis.GVA_XFSCLICENT.CallMethod(1, "VM.Call", &req, &result); err != nil {
-		return "", err
+		return nil, err
 	}
 	if result == nil {
-		return "", nil
+		return nil, nil
 	}
 	tuple, err := abi.DncodeCTypeTuple(result.(string))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	bs, err := json.Marshal(tuple)
-	if err != nil {
-		return "", err
-	}
-	return string(bs), nil
+	return tuple, nil
 }
 
 func (exp1155 *Exp1155) BalanceOfBatch(accounts, ids []string) (string, error) {
